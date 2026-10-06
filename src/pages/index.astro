@@ -3,8 +3,11 @@
 // bas à la demande du client :
 // hero → labels → 8 produits → expertise → frise historique → zone
 // d'intervention (carte) → avis Google → partenaires → contact.
+// Hero plein cadre sur la façade (image IA, src/assets/hero-ia/facade.jpg,
+// à remplacer par une vraie photo) ; variantes camion / vidéo sur les
+// branches apercu-1-camion et apercu-2-video.
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Hero from "../components/sections/Hero.astro";
+import HeroPlein from "../components/sections/HeroPlein.astro";
 import Certifications from "../components/sections/Certifications.astro";
 import HistoireFrise from "../components/sections/HistoireFrise.astro";
 import ProduitsGrid from "../components/sections/ProduitsGrid.astro";
@@ -21,7 +24,7 @@ const description =
 ---
 
 <BaseLayout title={title} description={description} schemaJsonLd={siteGraph()}>
-  <Hero />
+  <HeroPlein />
   <Certifications />
   <ProduitsGrid />
   <Expertise class="!pt-0" />
