@@ -17,7 +17,8 @@ export async function getStaticPaths() {
 
 const { item } = Astro.props;
 const { Content } = await render(item);
-const { title, location, year, gallery, description, produits, source } = item.data;
+const { title, location, year, gallery, description, produits, source, sourceUrl, credit } = item.data;
+const sourceHost = sourceUrl ? new URL(sourceUrl).hostname.replace(/^www\./, "") : undefined;
 
 const images = imagesRealisation(item.id);
 const [cover, ...reste] = images;
@@ -65,11 +66,12 @@ const schema = {
       <Container width="default">
         {cover ? (
           <div class="rounded-3xl overflow-hidden ring-1 ring-[var(--color-border)]">
-            <Image src={cover} alt={`${title} à ${location} — Malinge & Associés`} widths={[800, 1280, 1920]} sizes="(max-width: 1280px) 100vw, 1280px" loading="eager" decoding="async" format="webp" quality={82} class="w-full h-auto aspect-[16/9] object-cover" />
+            <Image src={cover} alt={`${title}, ${location} — Malinge & Associés`} widths={[800, 1280, 1920]} sizes="(max-width: 1280px) 100vw, 1280px" loading="eager" decoding="async" format="webp" quality={82} class="w-full h-auto aspect-[16/9] object-cover" />
           </div>
         ) : (
           <Placeholder label={`Photos — src/assets/realisations/${item.id}/`} ratio="21-9" />
         )}
+        {credit && <p class="mt-3 text-[12px] text-[var(--color-muted)]">{credit}</p>}
       </Container>
     </section>
 
@@ -78,6 +80,13 @@ const schema = {
         <div class="prose-ma max-w-3xl">
           <Content />
         </div>
+        {sourceUrl && (
+          <p class="mt-8 max-w-3xl text-[14px] text-[var(--color-muted)]">
+            <a href={sourceUrl} target="_blank" rel="noopener" class="font-medium text-[var(--color-accent)] underline underline-offset-4 decoration-[var(--color-accent)]/30 hover:decoration-[var(--color-accent)] transition-colors">
+              Voir la publication d'origine ({sourceHost})
+            </a>
+          </p>
+        )}
       </Container>
     </section>
 

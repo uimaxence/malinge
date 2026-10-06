@@ -68,7 +68,7 @@ hero → bandeau labels → frise → grille 8 produits → expertise / responsa
 ## 5. Réalisations
 
 Sources annoncées : 2 articles MéO (dont 1 reportage photo), photos SyBaie, publications Facebook.
-Quatre fiches créées dans `src/content/realisations/` (`reportage-meo`, `article-meo`, `chantier-sybaie`, `publication-facebook` en brouillon). Photos à déposer dans `src/assets/realisations/<slug>/`.
+Quatre fiches créées dans `src/content/realisations/` (`grange-rehabilitee-mauges` : reportage MéO, remplie le 06/10/2026 d'après la page fenetremeo.com, voir `docs/photos-menuiserie.md` ; `article-meo`, `chantier-sybaie`, `publication-facebook` en brouillon). Photos à déposer dans `src/assets/realisations/<slug>/`.
 
 ## 6. Zone d'intervention
 

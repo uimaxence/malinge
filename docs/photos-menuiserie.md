@@ -41,7 +41,7 @@ Regroupement déduit de la date de prise de vue et du contenu. Aucune commune n'
 | Q | 27/04/2023 | IMG_5192 | Porte blanche pleine vue de l'intérieur : porte d'entrée ou porte intérieure, à confirmer | réserve |
 | R | 15/06/2023 | IMG_5282 | Serrure d'une porte dans un local professionnel (photo technique) | réserve, non publiable |
 | S | 21/06/2023 | IMG_5300 à 5303, 5305 | Châssis fixes à vitrage dépoli dans une cage d'escalier (photos sombres) | fenêtres (1), réserve (4) |
-| T | 26/06/2023 | IMG_1641 | Grande baie cintrée en bois avec coulissant, grange rénovée. Photo de professionnel, 768 × 1151 px seulement | fenêtres (1) |
+| T | 26/06/2023 | IMG_1641 | Grande baie cintrée en bois avec coulissant, grange rénovée. Photo de Thomas Charrier pour le reportage MéO « Une ancienne grange agricole réhabilitée » (voir plus bas), 768 × 1151 px seulement | fenêtres (1), réalisation `grange-rehabilitee-mauges` |
 | U | 22/09/2026 | IMG_9620 | Cuisine blanche et bois, crédence noire | cuisine (1) |
 | V | sans date | ce6a9c56, 787a58eb, d4311611 | Porte semi-vitrée à vitrage décoratif, grise dehors, bois dedans | porte-entree (2), réserve (1) |
 | W | sans date | 6ae44759, f1616783, c7717905 | Maison contemporaine : baie en pignon à cadre bois, escalier métal et bois | hero (1), fenêtres (1), réserve (1) |
@@ -51,7 +51,8 @@ Regroupement déduit de la date de prise de vue et du contenu. Aucune commune n'
 ## À demander au client
 
 - [ ] Commune et accord des propriétaires pour les chantiers les plus complets (A, B, C, M, S, V, W, X), afin d'en faire des fiches Réalisations.
-- [ ] `IMG_1641` : origine (reportage MéO ?), droit de l'utiliser, fichier en haute définition.
+- [x] `IMG_1641` : photo du reportage MéO (Thomas Charrier, 26/06/2023), voir « Reportage MéO » ci-dessous.
+- [ ] Reportage MéO : demander à MéO les photos en haute définition et confirmer le droit de les reprendre sur le site ; confirmer la commune et l'année de fin de chantier.
 - [ ] Portes C et V : s'agit-il de portes bois-aluminium MéO ?
 - [ ] Groupe X : volets roulants à lames ajourées ou brise-soleil orientables ? Dans le second cas, les photos vont dans `protection-solaire`.
 - [ ] Groupe Y : faut-il montrer les portes intérieures et les chantiers en bâtiment public ? Aucune des 8 catégories ne les couvre.
@@ -59,6 +60,23 @@ Regroupement déduit de la date de prise de vue et du contenu. Aucune commune n'
 - [ ] Groupe G : parquet, stratifié ou sol vinyle ?
 - [ ] Sujet des photos F, N et Q.
 - [ ] Aucune photo pour : protection solaire, dressing, extérieur, showroom, équipe.
+
+## Reportage MéO « Une ancienne grange agricole réhabilitée » (06/10/2026)
+
+Page source : <https://www.fenetremeo.com/realisation/une-ancienne-grange-agricole-rehabilitee/>, publiée le 28/05/2025, « Réalisation : MALINGE & Associés », crédit photo Thomas Charrier. Fiche : `src/content/realisations/grange-rehabilitee-mauges.md` (texte réécrit, citations des propriétaires reprises telles quelles).
+
+Le site MéO ne sert que des vignettes de 500 px, sauf l'image d'en-tête : **demander à MéO les fichiers d'origine**. En attendant, converties en JPEG (sRGB, sans métadonnées) dans `src/assets/realisations/grange-rehabilitee-mauges/` :
+
+| Fichier MéO | Fichier du site | Taille |
+|---|---|---|
+| `header20le20pin20en20mauges-1.jpg` (image d'en-tête) | `01-facade-grange-arche-vitree.jpg` | 1865 × 925 |
+| `IMG_1641.heic` du lot Menuiserie (groupe T) | `02-sejour-arche-vitree-portails-bois.jpg` | 768 × 1151 |
+| `salon-7.png` | `03-sejour-arche-vitree.jpg` | 500 × 500 |
+| `cuisine-4.png` | `04-cuisine-porte-fenetre-bois.jpg` | 500 × 500 |
+| `salle-de-bain.png` | `05-salle-de-bain-fenetre-bois.jpg` | 500 × 500 |
+| `exterieur-4.png` | non conservé : recadrage 500 px de l'image d'en-tête | 500 × 500 |
+
+Le nom de l'image d'en-tête (« le pin en mauges ») laisse penser que la maison est au Pin-en-Mauges : à confirmer avec le client avant de l'écrire sur le site. Les photos du groupe I (Le Pin-en-Mauges, GPS) montrent une autre maison.
 
 ## Images générées par IA (06/10/2026)
 

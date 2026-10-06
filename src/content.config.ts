@@ -15,6 +15,10 @@ const realisations = defineCollection({
     produits: z.array(z.string()).default([]),
     /** Origine du contenu : reportage MéO, photos SyBaie, publication Facebook… */
     source: z.string().optional(),
+    /** Adresse de la publication d'origine (article MéO, publication Facebook…), affichée en lien sous le texte. */
+    sourceUrl: z.string().url().optional(),
+    /** Crédit des photos (photographe, partenaire), affiché sous la photo de couverture. */
+    credit: z.string().optional(),
     description: z.string().optional(),
     gallery: z.array(z.string()).optional(),
     draft: z.boolean().default(false),
