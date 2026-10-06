@@ -21,6 +21,3 @@ npm-debug.log*
 
 # instructions Claude Code (fichier local, non publié)
 CLAUDE.md
-
-# lot brut Agencement (HEIC avec coordonnées GPS des domiciles des clients) : jamais sur un dépôt public
-src/assets/photo/Agencement/

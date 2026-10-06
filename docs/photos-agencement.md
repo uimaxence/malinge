@@ -1,6 +1,6 @@
 # Photos « Agencement » — lot reçu le 06/10/2026
 
-99 fichiers bruts (96 HEIC, 3 JPG) dans `src/assets/photo/Agencement/`, conservés tels quels. Aucun doublon exact.
+99 fichiers bruts (96 HEIC, 3 JPG) dans `src/assets/photo/Agencement/`, conservés tels quels à une exception près : les coordonnées GPS ont été effacées du bloc EXIF des HEIC (image, date et appareil intacts). Aucun doublon exact.
 
 Chaque photo a été convertie une fois en JPEG (sRGB, orientation appliquée, 2400 px maxi, EXIF et GPS retirés) puis rangée :
 
@@ -21,9 +21,9 @@ Critère retenu pour publier : meuble terminé et pièce présentable (ni carton
 ## Ce que disent les métadonnées
 
 - **Date de prise de vue** : présente sur les 96 HEIC, de décembre 2018 à novembre 2025. Appareils : iPhone XR (2018-2025), iPhone 16 Pro pour `IMG_0157` (novembre 2025). Le lot couvre donc sept ans d'agencement, ce qui est très différent du lot Menuiserie.
-- **Lieu (GPS)** : présent sur les 96 HEIC. Commune obtenue par l'API Adresse (data.gouv.fr), au niveau commune uniquement ; seule la commune est reportée ici. 86 photos dans le Maine-et-Loire, 6 en Loire-Atlantique (Basse-Goulaine), 7 en Charente-Maritime (Périgny, Le Bois-Plage-en-Ré : résidences secondaires ?).
+- **Lieu** : les 96 HEIC reçus étaient géolocalisés. La commune a été relevée une fois par l'API Adresse (data.gouv.fr), puis les coordonnées ont été effacées des fichiers ; seule la commune est conservée, dans ce document et dans les fiches Réalisations. 86 photos dans le Maine-et-Loire, 6 en Loire-Atlantique (Basse-Goulaine), 7 en Charente-Maritime (Périgny, Le Bois-Plage-en-Ré : résidences secondaires ?).
 - **3 JPG sans métadonnées** : `Resized_20221216_163006.jpg` (date dans le nom, autre téléphone), `image0000001.jpg` et `image0000011.jpg` (messagerie).
-- ⚠️ Les HEIC d'origine contiennent les coordonnées précises des domiciles des clients. Les JPEG du site en sont débarrassés. Le dépôt GitHub étant public, le lot brut est exclu de git (`.gitignore`) et reste uniquement sur le poste de travail, contrairement au lot Menuiserie (2 photos localisées seulement, près de l'atelier).
+- Le dépôt GitHub est public : aucune coordonnée GPS ne doit y entrer, ni dans le lot brut, ni dans les JPEG du site (déjà sans métadonnées).
 
 ## Regroupement par chantier
 
