@@ -1,11 +1,15 @@
 ---
 // En-tête : logo, navigation (L'entreprise · Nos produits · Réalisations ·
-// Zones d'intervention) + CTA devis. Mega-menu « Nos produits » en 2 pôles.
+// Zones d'intervention) + CTA devis. Mega-menu « Nos produits » en 2 pôles,
+// avec un visuel à droite qui suit le survol (photo de la catégorie).
+import { getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
 import Container from "../ui/Container.astro";
 import Icon from "../ui/Icon.astro";
 import logo from "../../assets/logo.png";
-import { produitsParPole, POLES } from "../../data/produits";
+import { produits, produitsParPole, POLES } from "../../data/produits";
 import { telephones, toE164 } from "../../config/business";
+import { imagesProduit, imagesHero } from "../../lib/media";
 
 const pathname = Astro.url.pathname;
 const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
@@ -14,8 +18,52 @@ const colonnes = (["menuiserie", "agencement"] as const).map((pole) => ({
   pole,
   ...POLES[pole],
   tel: telephones[pole],
-  items: produitsParPole(pole).map((p) => ({ label: p.nom, href: `/produits/${p.slug}/` })),
+  items: produitsParPole(pole).map((p) => ({
+    slug: p.slug,
+    label: p.nom,
+    href: `/produits/${p.slug}/`,
+    icone: p.icone,
+    detail: p.sousProduits.slice(0, 2).map((s) => s.nom).join(" · "),
+  })),
 }));
+
+// Visuels du mega-menu : 1re photo de chaque catégorie (src/assets/produits/<slug>/),
+// optimisée par getImage. Les sources sont posées en `data-src` et ne sont
+// chargées qu'à la première ouverture du menu (cf. script).
+const VISUEL_DEFAUT = "tous";
+const optimise = async (src: ImageMetadata | undefined) => {
+  if (!src) return undefined;
+  const img = await getImage({ src, widths: [480, 720, 960], format: "webp", quality: 78 });
+  return {
+    src: img.src,
+    srcset: img.srcSet.attribute,
+    width: img.attributes.width as number,
+    height: img.attributes.height as number,
+  };
+};
+
+const visuels = [
+  {
+    slug: VISUEL_DEFAUT,
+    eyebrow: "Menuiserie & agencement",
+    titre: "Tous nos produits",
+    detail: "Huit familles de produits, du neuf à la rénovation, jusqu'au mobilier sur mesure.",
+    href: "/produits/",
+    lien: "Voir la gamme",
+    image: await optimise(imagesHero()[0] ?? imagesProduit(produits[0].slug)[0]),
+  },
+  ...(await Promise.all(
+    produits.map(async (p) => ({
+      slug: p.slug,
+      eyebrow: POLES[p.pole].label,
+      titre: p.nom,
+      detail: p.sousProduits.map((s) => s.nom).join(" · "),
+      href: `/produits/${p.slug}/`,
+      lien: "Découvrir",
+      image: await optimise(imagesProduit(p.slug)[0]),
+    })),
+  )),
+];
 
 const navItems = [
   { label: "L'entreprise", href: "/entreprise/" },
@@ -83,36 +131,88 @@ const navItems = [
     class="hidden lg:block absolute left-0 right-0 top-full bg-white opacity-0 invisible transition-all duration-200 pointer-events-none border-t border-[var(--color-border)] shadow-lg"
     data-menu-panel="produits"
   >
-    <Container width="wide" class="py-7">
-      <div class="grid grid-cols-[1fr_1fr_auto] gap-10">
+    <Container width="wide" class="py-6">
+      <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(21rem,24rem)] grid-rows-[1fr_auto] gap-x-10">
         {colonnes.map((col) => (
           <div>
-            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-secondary)] mb-1">{col.label}</p>
-            <p class="text-[12px] text-[var(--color-muted)] mb-4">{col.sousTitre}</p>
-            <ul class="grid grid-cols-2 gap-1">
+            <p class="flex items-baseline gap-2 px-3 mb-2">
+              <span class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-secondary)]">{col.label}</span>
+              <span class="text-[12px] text-[var(--color-muted)]">{col.sousTitre}</span>
+            </p>
+            <ul class="flex flex-col gap-0.5">
               {col.items.map((sub) => (
                 <li>
-                  <a href={sub.href} class="block px-3 py-2 rounded-md text-[14px] text-[var(--color-fg)] hover:bg-[var(--color-tint)] hover:text-[var(--color-accent)] transition-colors">
-                    {sub.label}
+                  <a
+                    href={sub.href}
+                    data-menu-item={sub.slug}
+                    class="group/item flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-[var(--color-tint)] transition-colors"
+                  >
+                    <span class="inline-flex shrink-0 items-center justify-center w-9 h-9 rounded-lg bg-[var(--color-subtle)] text-[var(--color-secondary)] group-hover/item:bg-white group-hover/item:text-[var(--color-accent)] transition-colors">
+                      <Icon name={sub.icone} size={16} />
+                    </span>
+                    <span class="min-w-0">
+                      <span class="block text-[14px] font-medium leading-tight text-[var(--color-fg)] group-hover/item:text-[var(--color-accent)] transition-colors">{sub.label}</span>
+                      <span class="mt-0.5 block truncate text-[12px] text-[var(--color-muted)]">{sub.detail}</span>
+                    </span>
                   </a>
                 </li>
               ))}
             </ul>
-            <a href={`tel:${toE164(col.tel.numero)}`} class="mt-4 inline-flex items-center gap-2 text-[13px] text-[var(--color-muted)] hover:text-[var(--color-accent)]">
+          </div>
+        ))}
+
+        <!-- Visuel : une vignette par catégorie, celle du lien survolé est affichée -->
+        <div
+          class="row-span-2 relative overflow-hidden rounded-2xl bg-[var(--color-tint)] ring-1 ring-black/5 min-h-[20rem]"
+          data-menu-visuel
+        >
+          {visuels.map((v) => (
+            <a
+              href={v.href}
+              class="menu-visuel"
+              data-visuel={v.slug}
+              data-active={v.slug === VISUEL_DEFAUT ? "true" : "false"}
+            >
+              {v.image && (
+                <img
+                  data-src={v.image.src}
+                  data-srcset={v.image.srcset}
+                  sizes="24rem"
+                  width={v.image.width}
+                  height={v.image.height}
+                  alt=""
+                  decoding="async"
+                />
+              )}
+              <span class="menu-visuel-legende">
+                <span class="block text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/75">{v.eyebrow}</span>
+                <span class="mt-1 block font-display text-[18px] font-semibold leading-tight">{v.titre}</span>
+                <span class="mt-1.5 block text-[12px] leading-snug text-white/80 line-clamp-2">{v.detail}</span>
+                <span class="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium">
+                  {v.lien} <Icon name="arrow" size={13} />
+                </span>
+              </span>
+            </a>
+          ))}
+        </div>
+
+        <!-- Pied : lignes directes + lien vers la gamme -->
+        <div class="col-span-2 mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-[var(--color-border)] px-3 pt-4">
+          {colonnes.map((col) => (
+            <a
+              href={`tel:${toE164(col.tel.numero)}`}
+              class="inline-flex items-center gap-2 whitespace-nowrap text-[13px] text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors"
+            >
               <Icon name="phone" size={13} />
               <span>{col.label} : <strong class="font-medium text-[var(--color-fg)]">{col.tel.numero}</strong></span>
             </a>
-          </div>
-        ))}
-        <div class="w-64 rounded-2xl bg-[var(--color-tint)] p-5 flex flex-col justify-between">
-          <div>
-            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-accent)]">Tous nos produits</p>
-            <p class="mt-2 text-[13px] text-[var(--color-muted)] leading-relaxed">
-              Huit familles de produits, du neuf à la rénovation, jusqu'au mobilier sur mesure.
-            </p>
-          </div>
-          <a href="/produits/" class="mt-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-[var(--color-accent)]">
-            Voir la gamme <Icon name="arrow" size={13} />
+          ))}
+          <a
+            href="/produits/"
+            data-menu-item={VISUEL_DEFAUT}
+            class="ml-auto inline-flex items-center gap-1.5 whitespace-nowrap text-[13px] font-medium text-[var(--color-accent)] hover:gap-2.5 transition-all"
+          >
+            Voir toute la gamme <Icon name="arrow" size={13} />
           </a>
         </div>
       </div>
@@ -169,6 +269,60 @@ const navItems = [
   </div>
 </header>
 
+<style>
+  /* Visuel du mega-menu : vignettes empilées, fondu enchaîné vers celle qui
+     est active. L'ancienne reste dessous le temps du fondu (pas de flash du
+     fond), puis disparaît. */
+  .menu-visuel {
+    position: absolute;
+    inset: 0;
+    display: block;
+    color: #fff;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 0;
+    transition:
+      opacity 0s linear 0.32s,
+      visibility 0s linear 0.32s;
+  }
+  .menu-visuel img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.06);
+    transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .menu-visuel-legende {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 4rem 1.25rem 1.25rem;
+    background: linear-gradient(to top, rgba(20, 22, 26, 0.82) 0%, rgba(20, 22, 26, 0.45) 55%, rgba(20, 22, 26, 0) 100%);
+    transform: translateY(6px);
+    transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .menu-visuel[data-active="true"] {
+    opacity: 1;
+    visibility: visible;
+    z-index: 1;
+    transition:
+      opacity 0.32s ease,
+      visibility 0s;
+  }
+  .menu-visuel[data-active="true"] img { transform: scale(1); }
+  .menu-visuel[data-active="true"] .menu-visuel-legende { transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-visuel,
+    .menu-visuel img,
+    .menu-visuel-legende {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>
+
 <script>
   // Menu mobile
   const toggle = document.querySelector<HTMLButtonElement>("[data-mobile-toggle]");
@@ -184,12 +338,33 @@ const navItems = [
   });
 
   // Mega-menu desktop (survol + focus)
+  const header = document.querySelector<HTMLElement>("[data-header]");
   const trigger = document.querySelector<HTMLElement>('[data-menu-trigger="produits"]');
   const panel = document.querySelector<HTMLElement>('[data-menu-panel="produits"]');
+  const VISUEL_DEFAUT = "tous";
   let timer = 0;
+
+  // Visuel : les photos ne sont chargées qu'à la première ouverture.
+  let hydrated = false;
+  const hydrate = () => {
+    if (hydrated || !panel) return;
+    hydrated = true;
+    panel.querySelectorAll<HTMLImageElement>("img[data-src]").forEach((img) => {
+      if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+      img.src = img.dataset.src ?? "";
+    });
+  };
+  const visuels = panel?.querySelectorAll<HTMLElement>("[data-visuel]") ?? [];
+  const montrer = (slug: string) => {
+    visuels.forEach((v) => {
+      v.dataset.active = String(v.dataset.visuel === slug);
+    });
+  };
+
   const open = () => {
     if (!panel || !trigger) return;
     window.clearTimeout(timer);
+    hydrate();
     panel.classList.remove("invisible", "pointer-events-none");
     panel.style.opacity = "1";
     trigger.setAttribute("aria-expanded", "true");
@@ -197,19 +372,33 @@ const navItems = [
   };
   const close = () => {
     if (!panel || !trigger) return;
+    window.clearTimeout(timer);
     timer = window.setTimeout(() => {
       panel.classList.add("invisible", "pointer-events-none");
       panel.style.opacity = "0";
       trigger.setAttribute("aria-expanded", "false");
       trigger.querySelector("svg")?.removeAttribute("style");
+      montrer(VISUEL_DEFAUT);
     }, 140);
   };
+
   if (trigger && panel) {
     trigger.addEventListener("mouseenter", open);
     trigger.addEventListener("focus", open);
     panel.addEventListener("mouseenter", open);
+    panel.addEventListener("focusin", open);
     trigger.addEventListener("mouseleave", close);
     panel.addEventListener("mouseleave", close);
+    header?.addEventListener("focusout", (e) => {
+      const next = e.relatedTarget as Node | null;
+      if (!next || !header.contains(next)) close();
+    });
     document.addEventListener("keydown", (e) => e.key === "Escape" && close());
+
+    panel.querySelectorAll<HTMLElement>("[data-menu-item]").forEach((item) => {
+      const slug = item.dataset.menuItem ?? VISUEL_DEFAUT;
+      item.addEventListener("mouseenter", () => montrer(slug));
+      item.addEventListener("focus", () => montrer(slug));
+    });
   }
 </script>
