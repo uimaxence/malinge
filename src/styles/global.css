@@ -309,17 +309,76 @@
   transform: none;
 }
 
+/* --- Disposition alternée (variant "full", page L'entreprise) :
+   ligne centrée, cartes à gauche puis à droite, grande année en vis-à-vis,
+   connecteur qui se dessine de la ligne vers la carte. --- */
+.frise-alt .frise-pill {
+  background: var(--color-tint);
+  color: var(--color-accent);
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+.frise-alt .is-reached .frise-pill {
+  background: var(--color-accent);
+  color: #fff;
+}
+.frise-alt .frise-annee {
+  color: var(--color-muted);
+  opacity: 0;
+  transition:
+    opacity 0.6s ease 0.05s,
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.05s,
+    color 0.5s ease 0.2s;
+}
+/* l'année arrive de son côté, la carte du sien : les deux convergent vers la ligne */
+.frise-alt [data-side="left"] .frise-annee { transform: translateX(28px); }
+.frise-alt [data-side="right"] .frise-annee { transform: translateX(-28px); }
+.frise-alt .is-reached .frise-annee {
+  opacity: 1;
+  transform: none;
+  color: var(--color-accent);
+}
+@media (min-width: 48rem) {
+  .frise-alt [data-side="left"]:not(.is-reached) .frise-card { transform: translateX(-34px); }
+
+  .frise-alt .frise-card { position: relative; }
+  .frise-alt .frise-card::before {
+    content: "";
+    position: absolute;
+    top: 1.15rem; /* aligné sur le centre du point (top-3 + 8px) */
+    width: 3.5rem; /* moitié de la colonne centrale (7rem) */
+    height: 3px;
+    border-radius: 9999px;
+    background: var(--color-accent);
+    opacity: 0;
+    transform: scaleX(0);
+    transition:
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.15s,
+      opacity 0.3s ease 0.15s;
+  }
+  .frise-alt [data-side="left"] .frise-card::before { right: -3.5rem; transform-origin: right center; }
+  .frise-alt [data-side="right"] .frise-card::before { left: -3.5rem; transform-origin: left center; }
+  .frise-alt .is-reached .frise-card::before {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
 /* Mouvement réduit : tout est visible, sans transition. */
 @media (prefers-reduced-motion: reduce) {
   [data-reveal],
   [data-frise-item] .frise-badge,
   [data-frise-item] .frise-dot,
   [data-frise-item] .frise-card,
-  [data-frise-item] .frise-icon {
+  [data-frise-item] .frise-card::before,
+  [data-frise-item] .frise-icon,
+  [data-frise-item] .frise-annee,
+  [data-frise-item] .frise-pill {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
   }
+  .frise-alt .frise-annee { color: var(--color-accent); }
+  .frise-alt .frise-pill { background: var(--color-accent); color: #fff; }
   [data-frise-line] {
     transform: none;
     transition: none;

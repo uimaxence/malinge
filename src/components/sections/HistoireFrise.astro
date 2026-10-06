@@ -1,9 +1,14 @@
 ---
-// Frise chronologique (inspiration : Le Comptoir des Menuisiers) —
-// texte à gauche, timeline verticale à droite avec badge année + carte.
+// Frise chronologique (inspiration : Le Comptoir des Menuisiers).
+// Deux dispositions :
+//  - "compact" (accueil) : texte à gauche, timeline verticale à droite avec
+//    badge année + carte ;
+//  - "full" (page L'entreprise) : ligne centrée, cartes en alternance à
+//    gauche puis à droite de la ligne, grande année en vis-à-vis. Sur mobile
+//    la ligne repasse à gauche et l'année devient une pastille dans la carte.
 // Animation au scroll : la ligne se dessine à mesure que l'on descend et
-// chaque étape « s'allume » (badge, point, carte) quand la ligne l'atteint.
-// Styles : global.css (« Frise chronologique »).
+// chaque étape « s'allume » (année, point, connecteur, carte) quand la ligne
+// l'atteint. Styles : global.css (« Frise chronologique »).
 import Container from "../ui/Container.astro";
 import Button from "../ui/Button.astro";
 import Icon from "../ui/Icon.astro";
@@ -16,6 +21,9 @@ interface Props {
   class?: string;
 }
 const { variant = "compact", class: className = "" } = Astro.props;
+
+const carte = "frise-card rounded-2xl bg-white p-6 shadow-[0_12px_40px_-18px_rgba(31,33,37,0.25)] ring-1 ring-black/5";
+const icone = "frise-icon inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--color-tint)] text-[var(--color-accent)]";
 ---
 
 <section
@@ -26,8 +34,8 @@ const { variant = "compact", class: className = "" } = Astro.props;
   ]}
 >
   <Container width="wide">
-    <div class:list={["grid gap-12 lg:gap-20 items-start", variant === "compact" ? "lg:grid-cols-[1fr_1.1fr]" : ""]}>
-      {variant === "compact" && (
+    {variant === "compact" ? (
+      <div class="grid gap-12 lg:gap-20 items-start lg:grid-cols-[1fr_1.1fr]">
         <div class="lg:sticky lg:top-28" data-reveal="left">
           <p class="eyebrow">Notre histoire</p>
           <h2 class="text-balance">Une entreprise des Mauges, <span class="text-[var(--color-accent)]">depuis 2005</span></h2>
@@ -44,34 +52,78 @@ const { variant = "compact", class: className = "" } = Astro.props;
             <Button href="/entreprise/" variant="outline">Découvrir l'entreprise</Button>
           </div>
         </div>
-      )}
 
-      <ol class="relative pl-[4.75rem] sm:pl-[6.5rem]" aria-label="Chronologie de l'entreprise" data-frise>
-        <!-- rail gris + ligne bleue qui se dessine au scroll -->
-        <span class="absolute left-[3.55rem] sm:left-[5.25rem] top-3 bottom-3 w-[3px] rounded-full" data-frise-line-track aria-hidden="true">
+        <ol class="relative pl-[4.75rem] sm:pl-[6.5rem]" aria-label="Chronologie de l'entreprise" data-frise>
+          <!-- rail gris + ligne bleue qui se dessine au scroll -->
+          <span class="absolute left-[3.55rem] sm:left-[5.25rem] top-3 bottom-3 w-[3px] rounded-full" data-frise-line-track aria-hidden="true">
+            <span class="absolute inset-0 rounded-full bg-gradient-to-b from-[var(--color-accent)] to-[var(--color-accent)]/70" data-frise-line></span>
+          </span>
+
+          {etapes.map((e, i) => (
+            <li class:list={["relative", i < etapes.length - 1 ? "pb-10 sm:pb-12" : ""]} data-frise-item>
+              <!-- badge année -->
+              <span class="frise-badge absolute -left-[4.75rem] sm:-left-[6.5rem] top-0 inline-flex items-center justify-center h-9 sm:h-10 w-[3.75rem] sm:w-[5.25rem] rounded-lg font-display text-[13px] sm:text-[15px] font-bold">
+                {e.annee}
+              </span>
+              <!-- point sur la ligne -->
+              <span class="frise-dot absolute -left-[1.55rem] sm:-left-[1.6rem] top-3 h-4 w-4 rounded-full ring-4 ring-white shadow" aria-hidden="true"></span>
+
+              <div class={carte}>
+                <span class={icone}>
+                  <Icon name={e.icone} size={18} />
+                </span>
+                <h3 class="mt-4 text-[17px] font-semibold">{e.titre}</h3>
+                <p class="mt-2 text-[14px] text-[var(--color-muted)] leading-relaxed">{e.texte}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    ) : (
+      <ol class="frise-alt relative mx-auto max-w-5xl pl-9 md:pl-0" aria-label="Chronologie de l'entreprise" data-frise>
+        <!-- rail gris + ligne bleue : à gauche sur mobile, centrée dès md -->
+        <span class="absolute left-[6.5px] md:left-1/2 md:-translate-x-1/2 top-3 bottom-3 w-[3px] rounded-full" data-frise-line-track aria-hidden="true">
           <span class="absolute inset-0 rounded-full bg-gradient-to-b from-[var(--color-accent)] to-[var(--color-accent)]/70" data-frise-line></span>
         </span>
 
-        {etapes.map((e, i) => (
-          <li class:list={["relative", i < etapes.length - 1 ? "pb-10 sm:pb-12" : ""]} data-frise-item>
-            <!-- badge année -->
-            <span class="frise-badge absolute -left-[4.75rem] sm:-left-[6.5rem] top-0 inline-flex items-center justify-center h-9 sm:h-10 w-[3.75rem] sm:w-[5.25rem] rounded-lg font-display text-[13px] sm:text-[15px] font-bold">
-              {e.annee}
-            </span>
-            <!-- point sur la ligne -->
-            <span class="frise-dot absolute -left-[1.55rem] sm:-left-[1.6rem] top-3 h-4 w-4 rounded-full ring-4 ring-white shadow" aria-hidden="true"></span>
+        {etapes.map((e, i) => {
+          const droite = i % 2 === 1; // carte à droite de la ligne, année à gauche
+          return (
+            <li
+              class:list={["relative md:grid md:grid-cols-[1fr_7rem_1fr] md:items-start", i < etapes.length - 1 ? "pb-10 md:pb-16" : ""]}
+              data-frise-item
+              data-side={droite ? "right" : "left"}
+            >
+              <!-- point sur la ligne -->
+              <span class="frise-dot absolute -left-9 md:left-1/2 md:-translate-x-1/2 top-3 h-4 w-4 rounded-full ring-4 ring-white shadow" aria-hidden="true"></span>
 
-            <div class="frise-card rounded-2xl bg-white p-6 shadow-[0_12px_40px_-18px_rgba(31,33,37,0.25)] ring-1 ring-black/5">
-              <span class="frise-icon inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--color-tint)] text-[var(--color-accent)]">
-                <Icon name={e.icone} size={18} />
-              </span>
-              <h3 class="mt-4 text-[17px] font-semibold">{e.titre}</h3>
-              <p class="mt-2 text-[14px] text-[var(--color-muted)] leading-relaxed">{e.texte}</p>
-            </div>
-          </li>
-        ))}
+              <!-- grande année en vis-à-vis de la carte (dès md) -->
+              <div
+                class:list={[
+                  "hidden md:flex md:row-start-1 md:items-start",
+                  droite ? "md:col-start-1 md:justify-end md:pr-12" : "md:col-start-3 md:justify-start md:pl-12",
+                ]}
+                aria-hidden="true"
+              >
+                <span class="frise-annee font-display text-5xl lg:text-6xl font-bold leading-none tracking-tight -mt-0.5">{e.annee}</span>
+              </div>
+
+              <div class:list={[carte, "md:row-start-1", droite ? "md:col-start-3" : "md:col-start-1"]}>
+                <div class="flex items-center justify-between gap-3">
+                  <span class={icone}>
+                    <Icon name={e.icone} size={18} />
+                  </span>
+                  <!-- année : pastille sur mobile seulement (dès md, en vis-à-vis) ; lue via le h3 -->
+                  <span class="frise-pill md:hidden inline-flex items-center h-7 px-2.5 rounded-md font-display text-[13px] font-bold" aria-hidden="true">{e.annee}</span>
+                </div>
+                <h3 class="mt-4 text-[17px] font-semibold"><span class="sr-only">{e.annee} : </span>{e.titre}</h3>
+                <p class="mt-2 text-[14px] text-[var(--color-muted)] leading-relaxed">{e.texte}</p>
+              </div>
+            </li>
+          );
+        })}
       </ol>
-    </div>
+    )}
   </Container>
 </section>
 
