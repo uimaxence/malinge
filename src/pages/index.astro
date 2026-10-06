@@ -3,11 +3,13 @@
 // bas à la demande du client :
 // hero → labels → 8 produits → expertise → frise historique → zone
 // d'intervention (carte) → avis Google → partenaires → contact.
+// APERÇU 2 (branche apercu-2-video) : hero vidéo piloté par le défilement
+// (public/hero/intro.mp4, images générées par IA).
 // Hero plein cadre sur la façade (image IA, src/assets/hero-ia/facade.jpg,
 // à remplacer par une vraie photo) ; variantes camion / vidéo sur les
 // branches apercu-1-camion et apercu-2-video.
 import BaseLayout from "../layouts/BaseLayout.astro";
-import HeroPlein from "../components/sections/HeroPlein.astro";
+import HeroVideo from "../components/sections/HeroVideo.astro";
 import Certifications from "../components/sections/Certifications.astro";
 import HistoireFrise from "../components/sections/HistoireFrise.astro";
 import ProduitsGrid from "../components/sections/ProduitsGrid.astro";
@@ -24,7 +26,7 @@ const description =
 ---
 
 <BaseLayout title={title} description={description} schemaJsonLd={siteGraph()}>
-  <HeroPlein />
+  <HeroVideo />
   <Certifications />
   <ProduitsGrid />
   <Expertise class="!pt-0" />
