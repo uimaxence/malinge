@@ -3,11 +3,14 @@
 // bas à la demande du client :
 // hero → labels → 8 produits → expertise → frise historique → zone
 // d'intervention (carte) → avis Google → partenaires → contact.
+// APERÇU 1 (branche apercu-1-camion) : même hero avec le camion lettré
+// (src/assets/hero-ia/camion.jpg).
 // Hero plein cadre sur la façade (image IA, src/assets/hero-ia/facade.jpg,
 // à remplacer par une vraie photo) ; variantes camion / vidéo sur les
 // branches apercu-1-camion et apercu-2-video.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HeroPlein from "../components/sections/HeroPlein.astro";
+import camion from "../assets/hero-ia/camion.jpg";
 import Certifications from "../components/sections/Certifications.astro";
 import HistoireFrise from "../components/sections/HistoireFrise.astro";
 import ProduitsGrid from "../components/sections/ProduitsGrid.astro";
@@ -24,7 +27,7 @@ const description =
 ---
 
 <BaseLayout title={title} description={description} schemaJsonLd={siteGraph()}>
-  <HeroPlein />
+  <HeroPlein image={camion} alt="Camion Malinge & Associés devant une maison rénovée, porte-fenêtre ouverte sur la cuisine" />
   <Certifications />
   <ProduitsGrid />
   <Expertise class="!pt-0" />
