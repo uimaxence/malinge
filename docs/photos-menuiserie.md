@@ -77,10 +77,12 @@ Générées avec Higgsfield (modèle Nano Banana 2 pour les images, Kling 3.0 po
 | `hero-ia/camion-2.jpg` | variante : fourgon de profil garé à gauche (le texte du hero le recouvrirait, non utilisée) |
 | `hero-ia/cuisine.jpg` | cuisine chêne dans la même maison (image de jonction des deux plans de la vidéo) |
 | `hero-ia/salon.jpg` | salon avec bibliothèque chêne toute hauteur (image finale de la vidéo) |
-| `public/hero/intro.mp4` + `intro-poster.jpg` | vidéo 19,8 s, 1280 × 720, un seul mouvement de caméra : façade → porte-fenêtre → cuisine → salon (deux plans Kling à images de départ et d'arrivée imposées, jonction sur `cuisine.jpg`) |
+| `hero-ia/facade-mobile.jpg` | même façade recadrée en portrait 9:16 (hero plein cadre sur téléphone, via `<picture>`) |
+| `public/hero/intro.mp4` + `intro-poster.jpg` | vidéo paysage 19,8 s, 1280 × 720, un seul mouvement de caméra : façade → porte-fenêtre → cuisine → salon (deux plans Kling à images de départ et d'arrivée imposées, jonction sur `cuisine.jpg`) — écrans en paysage |
+| `public/hero/mobile/000-078.webp` + `intro-mobile-poster.jpg` | même parcours en portrait (deux plans Kling de 5 s en 9:16, à partir de versions portrait des trois images), livré en 79 images WebP de 540 px (2,6 Mo) dessinées sur un canvas, car iPhone ne charge pas une vidéo sans geste de l'utilisateur — écrans en portrait |
 
 Non utilisés mais payés : `hero-ia/atelier.jpg`, deux premiers plans vidéo (façade seule, cuisine → dressing avec fondu), deux images de camion garé à gauche ou coupé.
-Coût total : 88 crédits Higgsfield (14 images dont un agrandissement 4K, 4 plans vidéo de 10 s).
+Coût total : 108 crédits Higgsfield (17 images dont un agrandissement 4K, 4 plans vidéo de 10 s et 2 de 5 s).
 
 ## Correspondance fichier par fichier
 

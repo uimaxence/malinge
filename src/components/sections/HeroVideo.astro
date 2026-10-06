@@ -1,24 +1,33 @@
 ---
 // Variante de hero « vidéo au défilement » (aperçu : /apercu/hero-video/).
-// La vidéo ne se lit pas toute seule : c'est le défilement dans la section
-// (300 vh) qui fait avancer `currentTime`. On part de la façade et de ses
-// fenêtres, on entre dans la maison, on longe la cuisine et on arrive dans le
-// salon devant la bibliothèque.
+// Rien ne se lit tout seul : c'est le défilement dans la section (300 vh) qui
+// fait avancer l'image. On part de la façade et de ses fenêtres, on entre dans
+// la maison, on longe la cuisine et on arrive dans le salon devant la
+// bibliothèque.
 //
-// Fichiers : public/hero/intro.mp4 (deux plans générés par IA — façade →
-// cuisine, puis cuisine → salon — qui partagent la même image de jonction
-// src/assets/hero-ia/cuisine.jpg, d'où un mouvement continu ; encodé avec une
-// image clé toutes les 6 images pour que la recherche soit fluide) et
-// public/hero/intro-poster.jpg.
-// Sans JS ou en prefers-reduced-motion : affiche fixe, hauteur normale.
+// Deux sources selon l'orientation de l'écran :
+//  - paysage (bureau) : public/hero/intro.mp4, piloté par `currentTime`
+//    (image clé toutes les 6 images pour que la recherche soit fluide) ;
+//  - portrait (téléphone) : séquence d'images public/hero/mobile/NNN.webp
+//    dessinée sur un canvas. Sur iPhone une vidéo ne se charge pas sans geste
+//    (et pas du tout en mode économie d'énergie) : les images, si.
+// L'affiche (intro-poster.jpg / intro-mobile-poster.jpg) reste en dessous
+// tant que la première image n'est pas prête ; sans JS ou en
+// prefers-reduced-motion, elle reste seule, à hauteur normale.
+//
+// Les plans sont générés par IA (deux plans Kling qui partagent la même image
+// de jonction, d'où un mouvement continu) ; voir docs/photos-menuiserie.md.
 import Container from "../ui/Container.astro";
 import Button from "../ui/Button.astro";
 import Icon from "../ui/Icon.astro";
 import { business, agence } from "../../config/business";
 
-// Légendes mises en avant selon l'avancement (0 → 1) dans la section. La vidéo
-// (19,8 s, un seul mouvement de caméra) : façade et porte-fenêtre (0 → 8 s),
-// cuisine (→ 15,5 s), salon et bibliothèque (→ fin).
+// Nombre d'images de la séquence mobile (public/hero/mobile/000.webp …,
+// une image sur trois de la vidéo verticale, 540 px de large, 2,6 Mo en tout).
+const NB_IMAGES_MOBILE = 79;
+
+// Légendes mises en avant selon l'avancement (0 → 1) dans la section :
+// façade et porte-fenêtre, puis cuisine, puis salon et bibliothèque.
 const etapes = [
   { de: 0, a: 0.4, label: "Fenêtres et portes sur mesure" },
   { de: 0.4, a: 0.78, label: "Cuisine sur mesure" },
@@ -26,38 +35,51 @@ const etapes = [
 ];
 ---
 
-<section class="hero-video relative bg-[#14110d] text-white" data-hero-video>
+<section
+  class="hero-video relative bg-[#14110d] text-white"
+  data-hero-video
+  data-images="/hero/mobile/"
+  data-images-nb={NB_IMAGES_MOBILE}
+>
   <div class="hero-video-cadre sticky top-[4.5rem] h-[calc(100svh-4.5rem)] overflow-hidden lg:top-20 lg:h-[calc(100svh-5rem)]">
+    <picture class="absolute inset-0" aria-hidden="true">
+      <source media="(orientation: portrait)" srcset="/hero/intro-mobile-poster.jpg" />
+      <img src="/hero/intro-poster.jpg" alt="" class="h-full w-full object-cover" decoding="async" fetchpriority="high" />
+    </picture>
     <video
-      class="absolute inset-0 h-full w-full object-cover"
+      class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300"
       muted
       playsinline
-      preload="auto"
-      poster="/hero/intro-poster.jpg"
+      preload="none"
       aria-hidden="true"
       data-video
     >
       <source src="/hero/intro.mp4" type="video/mp4" />
     </video>
-    <div class="absolute inset-0 bg-gradient-to-t from-[#14110d]/80 via-[#14110d]/25 to-transparent" aria-hidden="true"></div>
+    <canvas class="absolute inset-0 h-full w-full opacity-0 transition-opacity duration-300" aria-hidden="true" data-canvas></canvas>
+    <div class="absolute inset-0 bg-gradient-to-t from-[#14110d]/85 via-[#14110d]/30 to-transparent" aria-hidden="true"></div>
 
-    <Container width="wide" class="relative flex h-full flex-col justify-end pb-12 sm:pb-16">
+    <Container width="wide" class="relative flex h-full flex-col justify-end pb-10 sm:pb-16">
       <div class="max-w-2xl will-change-transform" data-hero-copy>
         <p class="eyebrow !text-white/75">Menuiserie &amp; agencement · {agence.lieuDit} (49)</p>
-        <h1 class="text-balance !text-white text-[clamp(2.25rem,5vw,3.75rem)]">
+        <h1 class="text-balance !text-white text-[clamp(1.9rem,5vw,3.75rem)]">
           Menuiserie et agencement <span class="text-[#a9cdeb]">sur mesure</span> dans les Mauges
         </h1>
-        <p class="mt-5 max-w-xl text-[15px] leading-relaxed text-white/80 sm:text-[17px]">
+        <p class="mt-4 max-w-xl text-[14px] leading-relaxed text-white/80 sm:mt-5 sm:text-[17px]">
           Depuis 2005, {business.name} conçoit, fabrique et pose vos portes, fenêtres, fermetures et protections
           solaires, et réalise cuisines, dressings et mobilier sur mesure.
         </p>
-        <div class="mt-8 flex flex-wrap gap-3">
+        <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 sm:mt-8">
           <Button href="/contact/">Demander un devis gratuit</Button>
-          <Button href="/produits/" variant="white" arrow={false}>Découvrir nos produits</Button>
+          <span class="hidden sm:inline-flex"><Button href="/produits/" variant="white" arrow={false}>Découvrir nos produits</Button></span>
+          <a href="/produits/" class="inline-flex items-center gap-1.5 text-[14px] font-medium text-white/85 sm:hidden">
+            Nos produits <Icon name="arrow" size={13} />
+          </a>
         </div>
       </div>
 
-      <ol class="mt-8 flex flex-wrap items-center gap-2" aria-hidden="true">
+      <!-- Sur téléphone, seule la légende active reste affichée. -->
+      <ol class="mt-6 flex flex-wrap items-center gap-2 sm:mt-8" aria-hidden="true">
         {etapes.map((e) => (
           <li
             class="hero-video-etape rounded-full bg-white/10 px-3.5 py-1.5 text-[12px] font-medium text-white/70 ring-1 ring-white/20 backdrop-blur-md transition-all duration-300"
@@ -69,7 +91,8 @@ const etapes = [
           </li>
         ))}
         <li class="ml-auto inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] text-white/60 transition-opacity duration-300" data-hero-indice>
-          Faites défiler <Icon name="chevron" size={13} class="rotate-90" />
+          <span class="hidden sm:inline">Faites défiler</span>
+          <Icon name="chevron" size={13} class="rotate-90 motion-safe:animate-bounce" />
         </li>
       </ol>
     </Container>
@@ -83,6 +106,10 @@ const etapes = [
     color: #fff;
     --tw-ring-color: transparent;
   }
+  @media (max-width: 639px) {
+    .hero-video-etape:not(.is-on) { display: none; }
+  }
+  .hero-video .is-pret { opacity: 1; }
   /* Sans animation (préférence système ou JS absent) : une seule hauteur d'écran, affiche fixe. */
   .hero-video.is-static { height: auto; }
   .hero-video.is-static .hero-video-cadre { position: relative; top: 0; }
@@ -95,26 +122,87 @@ const etapes = [
 <script>
   const section = document.querySelector<HTMLElement>("[data-hero-video]");
   const video = section?.querySelector<HTMLVideoElement>("[data-video]");
+  const canvas = section?.querySelector<HTMLCanvasElement>("[data-canvas]");
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  if (section && video && !reduced) {
+  if (section && video && canvas && !reduced) {
     const etapes = Array.from(section.querySelectorAll<HTMLElement>("[data-etape]"));
     const copy = section.querySelector<HTMLElement>("[data-hero-copy]");
     const indice = section.querySelector<HTMLElement>("[data-hero-indice]");
-    let duree = 0;
+    const portrait = window.matchMedia("(orientation: portrait)").matches;
     let avancement = 0;
     let raf = 0;
 
+    // --- Source paysage : la vidéo, révélée dès que sa première image est décodée.
+    let duree = 0;
+    const brancherVideo = () => {
+      video.preload = "auto";
+      video.load();
+      video.addEventListener("loadedmetadata", () => { duree = video.duration; planifier(); }, { once: true });
+      video.addEventListener("loadeddata", () => video.classList.add("is-pret"), { once: true });
+    };
+
+    // --- Source portrait : séquence d'images sur le canvas (objet « cover »).
+    const nb = Number(section.dataset.imagesNb);
+    const base = section.dataset.images ?? "";
+    const images: (HTMLImageElement | null)[] = new Array(nb).fill(null);
+    const ctx = canvas.getContext("2d");
+    const dimensionner = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(canvas.clientWidth * dpr);
+      canvas.height = Math.round(canvas.clientHeight * dpr);
+    };
+    const imageProche = (i: number) => {
+      for (let d = 0; d < nb; d++) {
+        if (images[i - d]) return images[i - d];
+        if (images[i + d]) return images[i + d];
+      }
+      return null;
+    };
+    const dessiner = () => {
+      const im = imageProche(Math.round(avancement * (nb - 1)));
+      if (!im || !ctx) return;
+      const cw = canvas.width, ch = canvas.height;
+      const r = Math.max(cw / im.naturalWidth, ch / im.naturalHeight);
+      const sw = cw / r, sh = ch / r;
+      ctx.drawImage(im, (im.naturalWidth - sw) / 2, (im.naturalHeight - sh) / 2, sw, sh, 0, 0, cw, ch);
+    };
+    const charger = (i: number) =>
+      new Promise<void>((fin) => {
+        const im = new Image();
+        im.decoding = "async";
+        im.onload = () => { images[i] = im; fin(); };
+        im.onerror = () => fin();
+        im.src = `${base}${String(i).padStart(3, "0")}.webp`;
+      });
+    const brancherImages = async () => {
+      dimensionner();
+      await charger(0);
+      dessiner();
+      canvas.classList.add("is-pret");
+      // Ordre de chargement : d'abord une image sur 8, puis sur 4, 2, 1 — la
+      // séquence est grossière très vite, puis s'affine.
+      const ordre: number[] = [];
+      const vu = new Set<number>([0]);
+      for (const pas of [8, 4, 2, 1]) for (let i = 0; i < nb; i += pas) if (!vu.has(i)) { vu.add(i); ordre.push(i); }
+      let k = 0;
+      const ouvrier = async () => {
+        while (k < ordre.length) { await charger(ordre[k++]); planifier(); }
+      };
+      await Promise.all([ouvrier(), ouvrier(), ouvrier()]);
+    };
+
+    // --- Avancement dans la section → image, légendes, texte.
     const mesurer = () => {
       const course = section.offsetHeight - window.innerHeight;
       const haut = section.getBoundingClientRect().top;
       return course > 0 ? Math.min(1, Math.max(0, -haut / course)) : 0;
     };
-
     const rendre = () => {
       raf = 0;
       const p = avancement;
-      if (duree) video.currentTime = p * duree;
+      if (portrait) dessiner();
+      else if (duree) video.currentTime = p * duree;
       for (const el of etapes) {
         el.classList.toggle("is-on", p >= Number(el.dataset.de) && p < Number(el.dataset.a) + (p === 1 ? 0.001 : 0));
       }
@@ -126,22 +214,15 @@ const etapes = [
       }
       if (indice) indice.style.opacity = p > 0.05 ? "0" : "1";
     };
-
     const planifier = () => {
       avancement = mesurer();
       if (!raf) raf = requestAnimationFrame(rendre);
     };
 
-    const pret = () => {
-      duree = video.duration;
-      video.pause();
-      planifier();
-    };
-    if (video.readyState >= 1) pret();
-    else video.addEventListener("loadedmetadata", pret, { once: true });
-
+    if (portrait) brancherImages();
+    else brancherVideo();
     window.addEventListener("scroll", planifier, { passive: true });
-    window.addEventListener("resize", planifier);
+    window.addEventListener("resize", () => { if (portrait) dimensionner(); planifier(); });
     planifier();
   } else if (section) {
     section.classList.add("is-static");
