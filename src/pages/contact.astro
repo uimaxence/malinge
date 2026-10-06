@@ -1,0 +1,65 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Container from "../components/ui/Container.astro";
+import Icon from "../components/ui/Icon.astro";
+import ContactForm from "../components/sections/ContactForm.astro";
+import { business, agence, telephones, openingHoursHuman, addressOneLine, toE164, SITE_URL } from "../config/business";
+import { siteGraph } from "../lib/schema";
+
+const mapsQuery = encodeURIComponent(addressOneLine());
+const title = "Contact & devis gratuit — Malinge & Associés, Le Pin-en-Mauges (49)";
+const description =
+  "Contactez Malinge & Associés au Pin-en-Mauges (Beaupréau-en-Mauges) : devis gratuit menuiserie et agencement, visite du showroom sur rendez-vous. Menuiserie 06 86 84 89 70 · Agencement 06 86 95 85 61.";
+const breadcrumb = [{ label: "Accueil", href: "/" }, { label: "Contact" }];
+
+const schema = siteGraph([
+  { "@type": "ContactPage", name: `Contact — ${business.name}`, url: `${SITE_URL}/contact/`, isPartOf: { "@id": `${SITE_URL}/#website` } },
+]);
+---
+
+<BaseLayout title={title} description={description} breadcrumb={breadcrumb} schemaJsonLd={schema}>
+  <section class="section-tight">
+    <Container width="default">
+      <p class="eyebrow">Contact</p>
+      <h1 class="text-balance max-w-3xl">Parlons de votre projet : devis gratuit et personnalisé</h1>
+      <p class="mt-6 max-w-2xl text-[16px] leading-relaxed">
+        Porte, fenêtre, volet, pergola, cuisine ou dressing : décrivez-nous votre projet, nous vous recontactons rapidement.
+        Le devis est <strong>gratuit et sans engagement</strong>.
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        {[telephones.menuiserie, telephones.agencement].map((l) => (
+          <a href={`tel:${toE164(l.numero)}`} class="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[14px] font-medium text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] shadow-sm transition-colors">
+            <Icon name="phone" size={15} /> <span class="text-white/70 text-[11px] uppercase tracking-[0.12em]">{l.label}</span> {l.numero}
+          </a>
+        ))}
+        <a href={`mailto:${business.email}`} class="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[14px] font-medium border border-[var(--color-fg)]/15 hover:bg-[var(--color-tint)] transition-colors">
+          <Icon name="mail" size={15} /> {business.email}
+        </a>
+      </div>
+    </Container>
+  </section>
+
+  <ContactForm withHeading={false} />
+
+  <section class="section-tight bg-[var(--color-subtle)]">
+    <Container width="default">
+      <div class="grid lg:grid-cols-2 gap-10">
+        <div>
+          <h2 class="mb-4">Notre atelier-showroom</h2>
+          <address class="not-italic text-[15px] text-[var(--color-muted)] leading-relaxed space-y-3">
+            <p><strong class="text-[var(--color-fg)]">Adresse</strong><br />{agence.adresse}<br />{agence.lieuDit}<br />{agence.codePostal} {agence.ville}</p>
+            <p><strong class="text-[var(--color-fg)]">Téléphones</strong><br />
+              {telephones.menuiserie.label} : <a href={`tel:${toE164(telephones.menuiserie.numero)}`} class="text-[var(--color-accent)] hover:underline">{telephones.menuiserie.numero}</a><br />
+              {telephones.agencement.label} : <a href={`tel:${toE164(telephones.agencement.numero)}`} class="text-[var(--color-accent)] hover:underline">{telephones.agencement.numero}</a>
+            </p>
+            <p><strong class="text-[var(--color-fg)]">Email</strong><br /><a href={`mailto:${business.email}`} class="text-[var(--color-accent)] hover:underline">{business.email}</a></p>
+            <p><strong class="text-[var(--color-fg)]">Horaires</strong><br />{openingHoursHuman.map((h) => <>{h}<br /></>)}</p>
+          </address>
+        </div>
+        <div class="rounded-2xl overflow-hidden ring-1 ring-[var(--color-border)] min-h-[300px]">
+          <iframe title="Localisation de Malinge & Associés au Pin-en-Mauges" src={`https://www.google.com/maps?q=${mapsQuery}&output=embed`} loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="w-full h-full min-h-[300px] border-0"></iframe>
+        </div>
+      </div>
+    </Container>
+  </section>
+</BaseLayout>

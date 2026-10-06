@@ -1,0 +1,271 @@
+---
+// Carte interactive du Maine-et-Loire — reprise de Fenêtres sur Loir,
+// adaptée à une implantation unique (Le Pin-en-Mauges). Fond en cantons
+// teintés selon la distance à l'agence, communes desservies cliquables,
+// libellés révélés au survol. En mobile : liste recherchable.
+import Container from "../ui/Container.astro";
+import Icon from "../ui/Icon.astro";
+import { communes, communesTriees, AGENCE_SLUG, agence } from "../../data/communes";
+import { communesGeo, cantonsGeo, depPath } from "../../data/communes-geo";
+
+const normalize = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+interface Props {
+  variant?: "full" | "compact";
+  class?: string;
+}
+const { variant = "full", class: className = "" } = Astro.props;
+
+const VIEW_W = 1000;
+const VIEW_H = 782;
+
+// Position de l'agence : centroïde de la commune de Beaupréau-en-Mauges,
+// légèrement décalé vers Le Pin-en-Mauges (nord-est de la commune).
+const geoAgence = communesGeo[AGENCE_SLUG];
+const AG = { x: geoAgence.cx + 18, y: geoAgence.cy - 22 };
+
+// Teinte des cantons : 4 paliers selon la distance à l'agence.
+const distances = cantonsGeo.map((c) => Math.hypot(c.cx - AG.x, c.cy - AG.y));
+const maxDist = Math.max(...distances);
+const cantons = cantonsGeo.map((c, i) => ({
+  d: c.d,
+  shade: Math.min(3, Math.floor((distances[i] / maxDist) * 4)),
+}));
+
+const zones = communes
+  .map((c) => {
+    const geo = communesGeo[c.slug];
+    return {
+      slug: c.slug,
+      nom: c.nom,
+      d: geo?.d,
+      cx: geo?.cx ?? 0,
+      cy: geo?.cy ?? 0,
+      permanent: Boolean(c.labelPermanent),
+    };
+  })
+  .filter((z) => z.d);
+---
+
+<section class:list={["section", className]}>
+  <Container width={variant === "full" ? "wide" : "default"}>
+    {variant === "compact" && (
+      <div class="max-w-2xl mx-auto text-center mb-10" data-reveal>
+        <p class="eyebrow">Zones d'intervention</p>
+        <h2 class="text-balance">Un menuisier près de chez vous, dans les Mauges et le Choletais</h2>
+        <p class="mt-4 text-base sm:text-lg text-[var(--color-muted)] leading-relaxed">
+          Depuis {agence.lieuDit}, nous intervenons à Beaupréau, Cholet, Chemillé, Sèvremoine et jusqu'à Angers.
+          Cliquez sur votre commune.
+        </p>
+      </div>
+    )}
+
+    <div class="grid lg:grid-cols-[1.6fr_1fr] gap-8 lg:gap-12 items-center">
+      <!-- Carte SVG — desktop -->
+      <div class="relative hidden lg:block" data-reveal="scale">
+        <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} class="zm-svg w-full h-auto overflow-visible" role="img" aria-labelledby="zonesmap-title zonesmap-desc" data-zonesmap>
+          <title id="zonesmap-title">Carte des zones d'intervention de Malinge & Associés en Maine-et-Loire</title>
+          <desc id="zonesmap-desc">Contour du Maine-et-Loire avec les communes desservies, cliquables, et notre atelier-showroom au Pin-en-Mauges.</desc>
+
+          <path d={depPath} class="zm-shade-3" />
+          <g>
+            {cantons.map((c) => <path d={c.d} class:list={["zm-canton", `zm-shade-${c.shade}`]} />)}
+          </g>
+
+          <g>
+            {zones.map((z) => (
+              <a href={`/menuisier-${z.slug}/`} class="group" data-zone={z.slug} aria-label={`Menuisier à ${z.nom}`}>
+                <title>{z.nom}</title>
+                <path d={z.d} class="zm-commune" />
+              </a>
+            ))}
+          </g>
+
+          <path d={depPath} class="zm-outline pointer-events-none" />
+
+          <g class="pointer-events-none">
+            <g class="zm-agence">
+              <circle cx={AG.x} cy={AG.y} r="15" class="zm-halo" />
+              <circle cx={AG.x} cy={AG.y} r="5.5" class="zm-dot" />
+              <text x={AG.x} y={AG.y - 30} text-anchor="middle" class="zm-eyebrow">Atelier · Showroom</text>
+              <text x={AG.x} y={AG.y - 14} text-anchor="middle" class="zm-label is-permanent is-agence" font-size="19" font-weight="700">Le Pin-en-Mauges</text>
+            </g>
+            {zones.map((z) => (
+              <text
+                data-zone-label={z.slug}
+                x={z.cx}
+                y={z.slug === AGENCE_SLUG ? z.cy + 14 : z.cy}
+                text-anchor="middle"
+                class:list={["zm-label", z.permanent && "is-permanent"]}
+                font-size="15"
+                font-weight="500"
+              >{z.nom}</text>
+            ))}
+          </g>
+        </svg>
+      </div>
+
+      <!-- Liste recherchable — mobile / tablette -->
+      <div class="lg:hidden" data-zones-mobile>
+        <label class="relative block">
+          <span class="sr-only">Rechercher votre commune</span>
+          <Icon name="search" size={18} class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" />
+          <input
+            type="search"
+            inputmode="search"
+            autocomplete="off"
+            placeholder="Rechercher votre commune…"
+            class="w-full rounded-full border border-[var(--color-border)] bg-white py-3 pl-11 pr-4 text-base shadow-sm outline-none transition-colors focus:border-[var(--color-accent)]"
+            data-zones-search
+            aria-controls="zones-mobile-results"
+          />
+        </label>
+        <div id="zones-mobile-results" class="mt-6">
+          <ul class="grid grid-cols-2 gap-2">
+            {communesTriees.map((c) => (
+              <li data-zones-item data-zones-name={normalize(c.nom)}>
+                <a href={`/menuisier-${c.slug}/`} class="flex items-center justify-between gap-1 rounded-xl border border-[var(--color-border)] bg-white px-3.5 py-3 text-sm font-medium transition-colors active:bg-[var(--color-tint)]">
+                  <span class="truncate">{c.nom}</span>
+                  <Icon name="chevron" size={16} class="shrink-0 -rotate-90 text-[var(--color-accent)]" />
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p class="hidden py-6 text-center text-sm text-[var(--color-muted)]" data-zones-empty>
+            Aucune commune ne correspond. Nous intervenons dans toutes les Mauges —
+            <a href="/contact/" class="text-[var(--color-accent)] underline underline-offset-2">contactez-nous</a>.
+          </p>
+        </div>
+      </div>
+
+      <div>
+        {variant === "full" && <h2 class="text-balance mb-4">Nos zones d'intervention</h2>}
+        <p class="text-[var(--color-muted)] leading-relaxed mb-6">
+          Nous intervenons dans les Mauges, le Choletais, les bords de Loire et jusqu'à l'agglomération angevine,
+          depuis notre atelier-showroom du Pin-en-Mauges.
+          <span class="hidden lg:inline">Survolez ou cliquez une commune sur la carte pour ouvrir sa page.</span>
+          <span class="lg:hidden">Sélectionnez votre commune dans la liste ci-dessus.</span>
+        </p>
+        {variant === "compact" ? (
+          <a href="/zones-intervention/" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] shadow-sm transition-colors">
+            Voir toutes nos zones d'intervention
+          </a>
+        ) : (
+          <a href="/contact/" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] shadow-sm transition-colors">
+            Votre commune n'est pas listée ? Contactez-nous
+          </a>
+        )}
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .zm-svg {
+    filter: drop-shadow(0 24px 44px color-mix(in srgb, var(--color-accent) 24%, transparent));
+  }
+  .zm-shade-0 { fill: color-mix(in srgb, var(--color-accent) 44%, white); }
+  .zm-shade-1 { fill: color-mix(in srgb, var(--color-accent) 34%, white); }
+  .zm-shade-2 { fill: color-mix(in srgb, var(--color-accent) 26%, white); }
+  .zm-shade-3 { fill: color-mix(in srgb, var(--color-accent) 19%, white); }
+  .zm-canton { stroke: rgba(255, 255, 255, 0.9); stroke-width: 1.4; stroke-linejoin: round; }
+  .zm-outline {
+    fill: none;
+    stroke: color-mix(in srgb, var(--color-accent) 75%, white);
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .zm-commune {
+    fill: var(--color-accent);
+    fill-opacity: 0;
+    stroke: #fff;
+    stroke-width: 1.5;
+    stroke-opacity: 0;
+    stroke-linejoin: round;
+    transition: fill-opacity 0.18s ease, stroke-opacity 0.18s ease;
+  }
+  .group:hover .zm-commune,
+  .group:focus-visible .zm-commune { fill-opacity: 1; stroke-opacity: 1; }
+  .zm-dot { fill: #fff; stroke: var(--color-accent); stroke-width: 3; }
+  .zm-halo {
+    fill: var(--color-accent);
+    opacity: 0.18;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: zm-pulse 3.2s ease-in-out infinite;
+  }
+  @keyframes zm-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.18; }
+    50% { transform: scale(1.35); opacity: 0.08; }
+  }
+  @media (prefers-reduced-motion: reduce) { .zm-halo { animation: none; } }
+  .zm-eyebrow {
+    fill: color-mix(in srgb, var(--color-accent) 80%, var(--color-fg));
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    paint-order: stroke;
+    stroke: #fff;
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    transition: opacity 0.15s ease;
+  }
+  .zm-label {
+    fill: var(--color-fg);
+    paint-order: stroke;
+    stroke: #fff;
+    stroke-width: 4px;
+    stroke-linejoin: round;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    user-select: none;
+  }
+  .zm-label.is-permanent { opacity: 1; }
+  .zm-label:not(.is-agence) { fill: color-mix(in srgb, var(--color-fg) 78%, var(--color-accent)); }
+  svg.zm-hovering .zm-label.is-permanent:not(.is-hover) { opacity: 0.1; }
+  svg.zm-hovering .zm-eyebrow { opacity: 0.1; }
+</style>
+
+<script>
+  for (const svg of document.querySelectorAll<SVGSVGElement>("[data-zonesmap]")) {
+    for (const link of svg.querySelectorAll<SVGAElement>("[data-zone]")) {
+      const slug = link.getAttribute("data-zone");
+      const label = svg.querySelector<SVGTextElement>(`[data-zone-label="${slug}"]`);
+      if (!label) continue;
+      const show = () => {
+        label.style.opacity = "1";
+        label.classList.add("is-hover");
+        svg.classList.add("zm-hovering");
+      };
+      const hide = () => {
+        label.style.opacity = "";
+        label.classList.remove("is-hover");
+        svg.classList.remove("zm-hovering");
+      };
+      link.addEventListener("mouseenter", show);
+      link.addEventListener("mouseleave", hide);
+      link.addEventListener("focus", show);
+      link.addEventListener("blur", hide);
+    }
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-zones-mobile]")) {
+    const input = root.querySelector<HTMLInputElement>("[data-zones-search]");
+    const items = Array.from(root.querySelectorAll<HTMLElement>("[data-zones-item]"));
+    const empty = root.querySelector<HTMLElement>("[data-zones-empty]");
+    if (!input) continue;
+    const norm = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+    input.addEventListener("input", () => {
+      const q = norm(input.value);
+      let visible = 0;
+      for (const item of items) {
+        const match = !q || (item.dataset.zonesName ?? "").includes(q);
+        item.hidden = !match;
+        if (match) visible++;
+      }
+      empty?.classList.toggle("hidden", visible !== 0);
+    });
+  }
+</script>

@@ -1,0 +1,54 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import Icon from "../../components/ui/Icon.astro";
+import ZonesMap from "../../components/sections/ZonesMap.astro";
+import CTASection from "../../components/sections/CTASection.astro";
+import { communesTriees, agence } from "../../data/communes";
+import { siteGraph } from "../../lib/schema";
+
+const title = "Zones d'intervention — Menuisier dans les Mauges et le Choletais (49) | Malinge & Associés";
+const description =
+  "Malinge & Associés intervient depuis Le Pin-en-Mauges à Beaupréau-en-Mauges, Cholet, Chemillé-en-Anjou, Sèvremoine, Mauges-sur-Loire et jusqu'à Angers. Trouvez votre commune.";
+const breadcrumb = [{ label: "Accueil", href: "/" }, { label: "Zones d'intervention" }];
+---
+
+<BaseLayout title={title} description={description} breadcrumb={breadcrumb} schemaJsonLd={siteGraph()}>
+  <section class="section-tight">
+    <Container width="default">
+      <div class="max-w-3xl">
+        <p class="eyebrow">Zones d'intervention</p>
+        <h1 class="text-balance">Votre menuisier-agenceur dans les Mauges et le Choletais</h1>
+        <p class="mt-6 text-[17px] leading-relaxed text-[var(--color-muted)]">
+          Depuis notre atelier-showroom du Pin-en-Mauges, nous intervenons dans un rayon d'environ 45 km : les
+          Mauges, le Choletais, les bords de Loire et l'agglomération angevine. Sélectionnez votre commune.
+        </p>
+      </div>
+    </Container>
+  </section>
+
+  <ZonesMap variant="full" class="!pt-0" />
+
+  <section class="section-tight bg-[var(--color-subtle)]">
+    <Container width="wide">
+      <h2 class="text-xl mb-6">Toutes les communes desservies</h2>
+      <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+        {communesTriees.map((c) => (
+          <li>
+            <a href={`/menuisier-${c.slug}/`} class="group flex items-center justify-between gap-2 rounded-xl bg-white ring-1 ring-[var(--color-border)] px-4 py-3 text-sm font-medium hover:ring-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
+              <span>{c.nom} <span class="text-[var(--color-muted)] font-normal">({c.codePostal})</span></span>
+              <Icon name="arrow" size={14} class="shrink-0 transition-transform group-hover:translate-x-0.5" />
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="mt-8 text-sm text-[var(--color-muted)] max-w-3xl">
+        <!-- TODO client : communes de Loire-Atlantique (Ancenis, Vallet…) et de Vendée si desservies. -->
+        Votre commune n'apparaît pas ? Nous intervenons aussi en limite de Loire-Atlantique et de Vendée :
+        <a href="/contact/" class="text-[var(--color-accent)] underline underline-offset-2">contactez-nous</a> pour vérifier.
+      </p>
+    </Container>
+  </section>
+
+  <CTASection eyebrow="Un projet de menuiserie ou d'agencement ?" title="Trouvons la solution adaptée à votre commune" secondaryLabel="Voir nos réalisations" secondaryHref="/realisations/" />
+</BaseLayout>

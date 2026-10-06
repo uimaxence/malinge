@@ -1,0 +1,7 @@
+{
+  "fetchedAt": null,
+  "note": "Généré par scripts/fetch-avis-google.mjs — ne pas éditer à la main. TODO client : renseigner le Place ID Google dans src/config/business.ts puis lancer `npm run avis:fetch`.",
+  "rating": null,
+  "count": 0,
+  "reviews": []
+}

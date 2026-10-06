@@ -1,0 +1,63 @@
+---
+// Barre supérieure : deux lignes directes (menuiserie / agencement), email et
+// réseaux — cf. wireframe « Tel agencement / menuiserie | mail | Réseaux ».
+import Icon from "../ui/Icon.astro";
+import { business, telephones, social, agence, toE164 } from "../../config/business";
+
+const lignes = [telephones.menuiserie, telephones.agencement];
+const reseaux = [
+  { key: "facebook" as const, label: "Facebook", href: social.facebook },
+  { key: "instagram" as const, label: "Instagram", href: social.instagram },
+].filter((r) => Boolean(r.href));
+---
+
+<div
+  class="hidden md:flex items-center justify-between gap-6 px-5 sm:px-8 h-9 text-[12px] text-[var(--color-muted)] bg-[var(--color-subtle)] border-b border-[var(--color-border)]"
+  data-topbar
+  aria-label="Informations de contact"
+>
+  <div class="hidden lg:flex items-center gap-1.5">
+    <Icon name="pin" size={12} />
+    <span>{agence.lieuDit} · {agence.codePostal} {agence.ville}</span>
+  </div>
+
+  <div class="flex items-center gap-5 ml-auto">
+    {lignes.map((l) => (
+      <a
+        href={`tel:${toE164(l.numero)}`}
+        class="inline-flex items-center gap-1.5 hover:text-[var(--color-accent)] transition-colors"
+        aria-label={`${l.label} : appeler le ${l.numero}`}
+      >
+        <Icon name="phone" size={12} />
+        <span class="uppercase tracking-[0.12em] text-[10.5px] font-semibold text-[var(--color-secondary)]">{l.label}</span>
+        <span class="font-medium text-[var(--color-fg)]">{l.numero}</span>
+      </a>
+    ))}
+
+    <span class="text-[var(--color-border)]" aria-hidden="true">·</span>
+
+    <a href={`mailto:${business.email}`} class="inline-flex items-center gap-1.5 hover:text-[var(--color-accent)] transition-colors">
+      <Icon name="mail" size={12} />
+      <span>{business.email}</span>
+    </a>
+
+    {reseaux.length > 0 && (
+      <>
+        <span class="text-[var(--color-border)]" aria-hidden="true">·</span>
+        <div class="flex items-center gap-2">
+          {reseaux.map((r) => (
+            <a
+              href={r.href!}
+              target="_blank"
+              rel="noopener noreferrer me"
+              aria-label={r.label}
+              class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[var(--color-muted)] hover:text-[var(--color-accent)] hover:bg-[var(--color-tint)] transition-colors"
+            >
+              <Icon name={r.key} size={13} />
+            </a>
+          ))}
+        </div>
+      </>
+    )}
+  </div>
+</div>

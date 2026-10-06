@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import ProduitsGrid from "../../components/sections/ProduitsGrid.astro";
+import CTASection from "../../components/sections/CTASection.astro";
+import { POLES } from "../../data/produits";
+import { telephones } from "../../config/business";
+
+const title = "Nos produits — Menuiserie et agencement sur mesure | Malinge & Associés";
+const description =
+  "Portes d'entrée, fenêtres, fermetures, protection solaire, cuisines, dressings, mobilier sur mesure et aménagements extérieurs : découvrez les huit familles de produits Malinge & Associés.";
+const breadcrumb = [{ label: "Accueil", href: "/" }, { label: "Nos produits" }];
+---
+
+<BaseLayout title={title} description={description} breadcrumb={breadcrumb}>
+  <section class="section-tight">
+    <Container width="default">
+      <p class="eyebrow">Nos produits</p>
+      <h1 class="text-balance max-w-3xl">Huit familles de produits, deux métiers complémentaires</h1>
+      <p class="mt-6 max-w-2xl text-[17px] leading-relaxed text-[var(--color-muted)]">
+        <strong class="text-[var(--color-fg)]">{POLES.menuiserie.label}</strong> ({POLES.menuiserie.sousTitre.toLowerCase()}) au {telephones.menuiserie.numero}
+        et <strong class="text-[var(--color-fg)]">{POLES.agencement.label}</strong> ({POLES.agencement.sousTitre.toLowerCase()}) au {telephones.agencement.numero} :
+        un interlocuteur dédié pour chaque projet.
+      </p>
+    </Container>
+  </section>
+  <ProduitsGrid withHeading={false} class="!pt-0" />
+  <CTASection eyebrow="Besoin d'un conseil ?" title="Nous étudions votre projet gratuitement" secondaryLabel="Visiter le showroom" secondaryHref="/entreprise/#showroom" />
+</BaseLayout>

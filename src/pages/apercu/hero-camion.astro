@@ -1,0 +1,29 @@
+---
+// Aperçu (noindex, hors sitemap) : hero plein cadre avec le camion lettré
+// « Malinge & Associés » devant la maison (image générée par IA,
+// src/assets/hero-ia/camion.jpg ; variante 3/4 avant : camion-2.jpg).
+// À supprimer une fois la variante choisie.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import HeroPlein from "../../components/sections/HeroPlein.astro";
+import Certifications from "../../components/sections/Certifications.astro";
+import HistoireFrise from "../../components/sections/HistoireFrise.astro";
+import ProduitsGrid from "../../components/sections/ProduitsGrid.astro";
+import Expertise from "../../components/sections/Expertise.astro";
+import ZonesMap from "../../components/sections/ZonesMap.astro";
+import AvisGoogle from "../../components/sections/AvisGoogle.astro";
+import Partenaires from "../../components/sections/Partenaires.astro";
+import ContactForm from "../../components/sections/ContactForm.astro";
+import camion from "../../assets/hero-ia/camion.jpg";
+---
+
+<BaseLayout title="Aperçu : hero camion — Malinge & Associés" description="Aperçu interne d'une variante de page d'accueil." noindex>
+  <HeroPlein image={camion} alt="Camion Malinge & Associés devant une maison rénovée, porte-fenêtre ouverte sur la cuisine" />
+  <Certifications />
+  <ProduitsGrid />
+  <Expertise class="!pt-0" />
+  <HistoireFrise variant="compact" />
+  <ZonesMap variant="compact" />
+  <AvisGoogle class="bg-[var(--color-subtle)]" />
+  <Partenaires />
+  <ContactForm />
+</BaseLayout>

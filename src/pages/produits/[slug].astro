@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageProduit from "../../components/templates/PageProduit.astro";
+import { produits } from "../../data/produits";
+import { siteGraph, BUSINESS_ID } from "../../lib/schema";
+import { SITE_URL } from "../../config/business";
+
+export function getStaticPaths() {
+  return produits.map((produit) => ({ params: { slug: produit.slug }, props: { produit } }));
+}
+
+const { produit } = Astro.props;
+
+const breadcrumb = [
+  { label: "Accueil", href: "/" },
+  { label: "Nos produits", href: "/produits/" },
+  { label: produit.nom },
+];
+
+const schema = siteGraph([
+  {
+    "@type": "Service",
+    "@id": `${SITE_URL}/produits/${produit.slug}/#service`,
+    name: produit.titre,
+    serviceType: produit.nom,
+    description: produit.description,
+    provider: { "@id": BUSINESS_ID },
+    areaServed: { "@type": "AdministrativeArea", name: "Maine-et-Loire" },
+    url: `${SITE_URL}/produits/${produit.slug}/`,
+  },
+]);
+---
+
+<BaseLayout title={`${produit.titre} — Malinge & Associés, Mauges (49)`} description={produit.description} breadcrumb={breadcrumb} schemaJsonLd={schema}>
+  <PageProduit produit={produit} />
+</BaseLayout>

@@ -1,0 +1,114 @@
+---
+import Container from "../ui/Container.astro";
+import Icon from "../ui/Icon.astro";
+import logoIcon from "../../assets/logo-icon.png";
+import { business, agence, telephones, social, openingHoursHuman, toE164 } from "../../config/business";
+import { produits } from "../../data/produits";
+import { communesTriees } from "../../data/communes";
+
+const year = new Date().getFullYear();
+
+const reseaux = [
+  { key: "facebook" as const, label: "Facebook", href: social.facebook },
+  { key: "instagram" as const, label: "Instagram", href: social.instagram },
+].filter((r) => Boolean(r.href));
+
+const colonnes = [
+  {
+    title: "Nos produits",
+    href: "/produits/",
+    links: produits.map((p) => ({ label: p.nom, href: `/produits/${p.slug}/` })),
+  },
+  {
+    title: "L'entreprise",
+    href: "/entreprise/",
+    links: [
+      { label: "Notre histoire", href: "/entreprise/" },
+      { label: "Notre showroom", href: "/entreprise/#showroom" },
+      { label: "Menuisier d'Excellence MéO", href: "/menuisier-excellence-meo/" },
+      { label: "Nos réalisations", href: "/realisations/" },
+      { label: "Contact & devis", href: "/contact/" },
+    ],
+  },
+  {
+    title: "Zones d'intervention",
+    href: "/zones-intervention/",
+    links: [
+      ...communesTriees.slice(0, 6).map((c) => ({ label: `Menuisier à ${c.nom}`, href: `/menuisier-${c.slug}/` })),
+      { label: "Toutes nos communes", href: "/zones-intervention/" },
+    ],
+  },
+];
+---
+
+<footer class="relative overflow-hidden bg-[var(--color-fg)] text-white/85 pattern-bois pattern-bois-fade" style="--pattern-color: #fff; --pattern-opacity: 0.05;">
+  <Container width="wide" class="relative pt-14 sm:pt-16 pb-10">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-10">
+      {colonnes.map((col) => (
+        <div>
+          <a href={col.href} class="block text-[12px] font-semibold uppercase tracking-[0.16em] text-white mb-4 hover:text-[var(--color-accent)] transition-colors">
+            {col.title}
+          </a>
+          <ul class="space-y-2.5">
+            {col.links.map((link) => (
+              <li>
+                <a href={link.href} class="text-sm text-white/70 hover:text-white transition-colors">{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+
+      <address class="not-italic col-span-2 md:col-span-1">
+        <p class="text-[12px] font-semibold uppercase tracking-[0.16em] text-white mb-4">Nous contacter</p>
+        <ul class="space-y-3 text-sm text-white/70">
+          <li class="flex gap-2.5">
+            <Icon name="pin" size={16} class="shrink-0 mt-0.5 text-[var(--color-accent)]" />
+            <span>{agence.adresse}<br />{agence.lieuDit}<br />{agence.codePostal} {agence.ville}</span>
+          </li>
+          {[telephones.menuiserie, telephones.agencement].map((l) => (
+            <li class="flex gap-2.5">
+              <Icon name="phone" size={16} class="shrink-0 mt-0.5 text-[var(--color-accent)]" />
+              <a href={`tel:${toE164(l.numero)}`} class="hover:text-white">
+                <span class="text-white/50 text-[11px] uppercase tracking-[0.12em]">{l.label}</span><br />{l.numero}
+              </a>
+            </li>
+          ))}
+          <li class="flex gap-2.5">
+            <Icon name="mail" size={16} class="shrink-0 mt-0.5 text-[var(--color-accent)]" />
+            <a href={`mailto:${business.email}`} class="hover:text-white break-all">{business.email}</a>
+          </li>
+          <li class="flex gap-2.5">
+            <Icon name="clock" size={16} class="shrink-0 mt-0.5 text-[var(--color-accent)]" />
+            <span>{openingHoursHuman.map((h) => <>{h}<br /></>)}</span>
+          </li>
+        </ul>
+      </address>
+    </div>
+
+    <div class="mt-14 border-t border-white/10 pt-8 flex flex-col sm:flex-row sm:items-center gap-6">
+      <img src={logoIcon.src} alt="" width={logoIcon.width} height={logoIcon.height} loading="lazy" decoding="async" class="h-12 w-auto object-contain rounded-md bg-white p-1.5" />
+      <div>
+        <p class="font-display text-lg font-semibold text-white">{business.name}</p>
+        <p class="text-[13px] text-white/60">{business.tagline} · Neuf, rénovation, mobilier sur mesure · Menuisier d'Excellence MéO · RGE Qualibat</p>
+      </div>
+      {reseaux.length > 0 && (
+        <div class="sm:ml-auto flex items-center gap-3">
+          {reseaux.map((r) => (
+            <a href={r.href!} aria-label={r.label} target="_blank" rel="noopener noreferrer me" class="w-9 h-9 inline-flex items-center justify-center rounded-full bg-white/5 ring-1 ring-white/10 text-white/70 hover:text-white hover:bg-white/10 transition-colors">
+              <Icon name={r.key} size={15} />
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <div class="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-[12px] text-white/50">
+      <p>© {year} {business.name}. Tous droits réservés.</p>
+      <ul class="flex flex-wrap gap-x-6 gap-y-2">
+        <li><a href="/mentions-legales/" class="hover:text-white underline underline-offset-4 decoration-white/30">Mentions légales</a></li>
+        <li><a href="/mentions-legales/#donnees" class="hover:text-white underline underline-offset-4 decoration-white/30">Données personnelles</a></li>
+      </ul>
+    </div>
+  </Container>
+</footer>

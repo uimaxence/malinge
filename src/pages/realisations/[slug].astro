@@ -1,0 +1,102 @@
+---
+import { getCollection, render } from "astro:content";
+import { Image } from "astro:assets";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import Placeholder from "../../components/ui/Placeholder.astro";
+import CTASection from "../../components/sections/CTASection.astro";
+import { imagesRealisation } from "../../lib/media";
+import { getProduit } from "../../data/produits";
+import { ORG_ID } from "../../lib/schema";
+import { SITE_URL } from "../../config/business";
+
+export async function getStaticPaths() {
+  const items = await getCollection("realisations", ({ data }) => !data.draft);
+  return items.map((item) => ({ params: { slug: item.id }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const { Content } = await render(item);
+const { title, location, year, gallery, description, produits, source } = item.data;
+
+const images = imagesRealisation(item.id);
+const [cover, ...reste] = images;
+const produitsLies = produits.map((s) => getProduit(s)).filter(Boolean);
+
+const breadcrumb = [
+  { label: "Accueil", href: "/" },
+  { label: "Réalisations", href: "/realisations/" },
+  { label: title },
+];
+
+const pageUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "@id": `${pageUrl}#realisation`,
+  name: title,
+  ...(description ? { description } : {}),
+  ...(year ? { dateCreated: String(year) } : {}),
+  locationCreated: { "@type": "Place", name: location },
+  ...(cover ? { image: new URL(cover.src, SITE_URL).toString() } : {}),
+  creator: { "@id": ORG_ID },
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+};
+---
+
+<BaseLayout title={`${title} (${location}) — Malinge & Associés`} description={description ?? `Réalisation Malinge & Associés à ${location}.`} breadcrumb={breadcrumb} schemaJsonLd={schema}>
+  <article>
+    <section class="section-tight">
+      <Container width="default">
+        <p class="eyebrow">{source ?? "Réalisation"} · {location}{year ? ` · ${year}` : ""}</p>
+        <h1 class="text-balance max-w-3xl">{title}</h1>
+        {description && <p class="mt-6 max-w-2xl text-[17px] leading-relaxed text-[var(--color-muted)]">{description}</p>}
+        {produitsLies.length > 0 && (
+          <ul class="mt-6 flex flex-wrap gap-2">
+            {produitsLies.map((p) => (
+              <li><a href={`/produits/${p!.slug}/`} class="inline-flex items-center rounded-full bg-[var(--color-tint)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-white transition-colors">{p!.nom}</a></li>
+            ))}
+          </ul>
+        )}
+      </Container>
+    </section>
+
+    <section class="pb-12">
+      <Container width="default">
+        {cover ? (
+          <div class="rounded-3xl overflow-hidden ring-1 ring-[var(--color-border)]">
+            <Image src={cover} alt={`${title} à ${location} — Malinge & Associés`} widths={[800, 1280, 1920]} sizes="(max-width: 1280px) 100vw, 1280px" loading="eager" decoding="async" format="webp" quality={82} class="w-full h-auto aspect-[16/9] object-cover" />
+          </div>
+        ) : (
+          <Placeholder label={`Photos — src/assets/realisations/${item.id}/`} ratio="21-9" />
+        )}
+      </Container>
+    </section>
+
+    <section class="pb-16">
+      <Container width="default">
+        <div class="prose-ma max-w-3xl">
+          <Content />
+        </div>
+      </Container>
+    </section>
+
+    {reste.length > 0 && (
+      <section class="section-tight bg-[var(--color-subtle)]">
+        <Container width="wide">
+          <p class="eyebrow text-center">Galerie</p>
+          <h2 class="text-center mb-10">En images</h2>
+          <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {reste.map((img, i) => (
+              <li class="overflow-hidden rounded-xl ring-1 ring-[var(--color-border)] bg-white">
+                <Image src={img} alt={(gallery?.[i + 1] ?? `${title} — vue ${i + 2}`) + ` — Malinge & Associés`} widths={[400, 700, 1000]} sizes="(max-width: 1024px) 50vw, 33vw" loading="lazy" decoding="async" format="webp" quality={78} class="w-full h-full aspect-[4/3] object-cover" />
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </section>
+    )}
+
+    <CTASection eyebrow="Votre projet" title="Et votre maison, à quoi ressemblera-t-elle ?" secondaryLabel="Toutes les réalisations" secondaryHref="/realisations/" />
+  </article>
+</BaseLayout>

@@ -1,0 +1,113 @@
+---
+// Page « Menuisier d'Excellence MéO » : ce que le label engage, la gamme
+// bois-aluminium, le configurateur de porte d'entrée, l'extension de garantie.
+import { Image } from "astro:assets";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Container from "../components/ui/Container.astro";
+import Icon from "../components/ui/Icon.astro";
+import MeoGamme from "../components/sections/MeoGamme.astro";
+import MeoConfigurateur from "../components/sections/MeoConfigurateur.astro";
+import CTASection from "../components/sections/CTASection.astro";
+import { business, agence } from "../config/business";
+import { meo } from "../data/meo";
+import { logoPartenaire } from "../lib/media";
+import { siteGraph } from "../lib/schema";
+
+const title = "Menuisier d'Excellence MéO dans les Mauges — Malinge & Associés";
+const description =
+  "Malinge & Associés est membre du Club des Menuisiers d'Excellence MéO : fenêtres, baies et portes d'entrée bois-aluminium fabriquées en Vendée, posées au Pin-en-Mauges et dans les Mauges, extension de garantie 15 ans, configurateur de porte en ligne.";
+
+const breadcrumb = [{ label: "Accueil", href: "/" }, { label: "Menuisier d'Excellence MéO" }];
+const logo = logoPartenaire("meo");
+
+const schema = siteGraph([
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Menuiseries bois-aluminium MéO",
+    serviceType: "Fourniture et pose de menuiseries bois-aluminium",
+    provider: { "@id": `${business.url}/#organization` },
+    brand: { "@type": "Brand", name: "MéO", url: meo.site },
+    areaServed: { "@type": "AdministrativeArea", name: "Maine-et-Loire" },
+    url: `${business.url}/menuisier-excellence-meo/`,
+    description,
+  },
+]);
+---
+
+<BaseLayout title={title} description={description} breadcrumb={breadcrumb} schemaJsonLd={schema}>
+  <section class="section-tight">
+    <Container width="default">
+      <div class="grid lg:grid-cols-[1fr_280px] gap-10 items-start">
+        <div>
+          <p class="eyebrow">Notre label</p>
+          <h1 class="text-balance max-w-3xl">
+            {business.name}, <span class="text-[var(--color-accent)]">Menuisier d'Excellence</span> MéO
+          </h1>
+          <p class="mt-6 max-w-2xl text-[17px] leading-relaxed text-[var(--color-muted)]">
+            MéO réunit depuis {meo.clubDepuis} ses meilleurs installateurs dans le Club des Menuisiers d'Excellence. En être membre, c'est être formé par le fabricant,
+            poser ses menuiseries dans les règles de l'art, et pouvoir proposer à nos clients une extension de garantie réservée au Club. Pour vous, à {agence.lieuDit} comme dans toutes les Mauges, cela change trois choses.
+          </p>
+          <ul class="mt-8 grid sm:grid-cols-2 gap-3">
+            {meo.engagements.map((e, i) => (
+              <li class="flex gap-3 rounded-2xl bg-white ring-1 ring-[var(--color-border)] p-4" data-reveal data-reveal-delay={String(i * 70)}>
+                <span class="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full bg-[var(--color-tint)] text-[var(--color-accent)]">
+                  <Icon name="check" size={15} />
+                </span>
+                <span class="text-[14.5px] leading-snug">{e}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <aside class="rounded-2xl bg-[var(--color-tint-2)] p-6 flex flex-col items-start gap-4" data-reveal="right">
+          {logo && <Image src={logo} alt="Logo MéO" widths={[160, 320]} sizes="160px" loading="eager" decoding="async" class="h-14 w-auto object-contain" />}
+          <p class="text-[14px] leading-relaxed text-[var(--color-muted)]">{meo.presentation}</p>
+          <ul class="space-y-1.5 text-[13.5px]">
+            {meo.alliance.map((a) => (
+              <li class="flex gap-2"><Icon name="leaf" size={14} class="shrink-0 mt-0.5 text-[var(--color-accent)]" /><span>{a}</span></li>
+            ))}
+          </ul>
+          <a href={meo.club} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-[13px] font-medium text-[var(--color-accent)] hover:underline">
+            Le Club chez MéO <Icon name="external" size={12} />
+          </a>
+        </aside>
+      </div>
+    </Container>
+  </section>
+
+  <MeoGamme class="bg-[var(--color-subtle)]" />
+
+  <MeoConfigurateur />
+
+  <section id="garantie" class="section-tight scroll-mt-24">
+    <Container width="default">
+      <div class="grid lg:grid-cols-2 gap-8 items-start">
+        <div data-reveal>
+          <p class="eyebrow">Extension de garantie</p>
+          <h2 class="text-balance">Vos menuiseries MéO garanties {meo.garantie.duree}</h2>
+          <p class="mt-4 text-base sm:text-lg text-[var(--color-muted)] leading-relaxed">{meo.garantie.texte}</p>
+        </div>
+        <div class="rounded-2xl bg-white ring-1 ring-[var(--color-border)] p-6 sm:p-8" data-reveal="right">
+          <p class="font-semibold">Comment l'activer</p>
+          <p class="mt-2 text-[14.5px] leading-relaxed text-[var(--color-muted)]">{meo.garantie.activation}</p>
+          <div class="mt-5 flex flex-wrap gap-3">
+            <a href={meo.extensionGarantie} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[14px] font-medium text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] transition-colors">
+              Activer sur le site de MéO <Icon name="external" size={13} />
+            </a>
+            <a href={meo.conditionsGarantie} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2 py-2.5 text-[13px] text-[var(--color-muted)] hover:text-[var(--color-fg)]">
+              Lire les conditions <Icon name="external" size={12} />
+            </a>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </section>
+
+  <CTASection
+    eyebrow="Votre projet"
+    title="Une fenêtre, une baie ou une porte d'entrée MéO ?"
+    text="Devis gratuit, prise de cotes à domicile, et les gammes MéO à voir au showroom du Pin-en-Mauges, sur rendez-vous."
+    secondaryLabel="Voir nos réalisations"
+    secondaryHref="/realisations/"
+  />
+</BaseLayout>

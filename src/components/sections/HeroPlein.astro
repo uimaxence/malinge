@@ -1,0 +1,74 @@
+---
+// Variante de hero « plein cadre » (aperçu : /apercu/hero-plein/). La photo
+// occupe toute la largeur et le texte passe en clair. Le visuel par défaut est
+// une image générée par IA (src/assets/hero-ia/facade.jpg, la maison de la
+// vidéo) : à remplacer par une vraie photo dès que le client en fournit une.
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import Container from "../ui/Container.astro";
+import Button from "../ui/Button.astro";
+import Icon from "../ui/Icon.astro";
+import facade from "../../assets/hero-ia/facade.jpg";
+import { business, agence } from "../../config/business";
+
+interface Props {
+  image?: ImageMetadata;
+  alt?: string;
+}
+const { image = facade, alt = "Maison rénovée : porte-fenêtre et fenêtres sur mesure ouvertes sur la cuisine" } = Astro.props;
+
+const badges = [
+  { icon: "award" as const, label: "Menuisier d'Excellence MéO" },
+  { icon: "shield" as const, label: "RGE Qualibat · TVA réduite" },
+  { icon: "ruler" as const, label: "Fabrication & pose sur mesure" },
+];
+---
+
+<section class="relative isolate overflow-hidden bg-[#2a251f] text-white">
+  <Image
+    src={image}
+    alt={alt}
+    widths={[800, 1200, 1800, 2400, 3200]}
+    sizes="100vw"
+    loading="eager"
+    decoding="async"
+    format="webp"
+    quality={78}
+    class="absolute inset-0 h-full w-full object-cover"
+  />
+  <div class="absolute inset-0 bg-gradient-to-t from-[#14110d]/85 via-[#14110d]/35 to-[#14110d]/10" aria-hidden="true"></div>
+  <div class="absolute inset-0 bg-gradient-to-r from-[#14110d]/60 via-[#14110d]/10 to-transparent" aria-hidden="true"></div>
+
+  <Container width="wide" class="relative flex min-h-[78svh] flex-col justify-end pb-12 pt-28 sm:pb-16 lg:min-h-[84svh]">
+    <div class="max-w-2xl">
+      <p class="eyebrow !text-white/75">Menuiserie &amp; agencement · {agence.lieuDit} (49)</p>
+      <h1 class="text-balance !text-white text-[clamp(2.25rem,5vw,3.75rem)]">
+        Menuiserie et agencement <span class="text-[#a9cdeb]">sur mesure</span> dans les Mauges
+      </h1>
+      <p class="mt-5 max-w-xl text-[15px] leading-relaxed text-white/80 sm:text-[17px]">
+        Depuis 2005, {business.name} conçoit, fabrique et pose vos portes, fenêtres, fermetures et protections
+        solaires, et réalise cuisines, dressings et mobilier sur mesure. Une équipe locale, un interlocuteur unique,
+        de l'étude à la pose.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <Button href="/contact/">Demander un devis gratuit</Button>
+        <Button href="/produits/" variant="white" arrow={false}>Découvrir nos produits</Button>
+      </div>
+    </div>
+
+    <ul class="mt-10 flex flex-wrap gap-x-7 gap-y-3 border-t border-white/15 pt-6">
+      {badges.map((b) => (
+        <li class="inline-flex items-center gap-2 text-[13px] font-medium text-white/90">
+          <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-[#a9cdeb] ring-1 ring-white/20">
+            <Icon name={b.icon} size={14} />
+          </span>
+          {b.label}
+        </li>
+      ))}
+      <li class="ml-auto inline-flex items-baseline gap-1.5 text-white/90">
+        <span class="font-display text-2xl font-bold leading-none text-[#a9cdeb]">20+</span>
+        <span class="text-[12px]">ans de savoir-faire</span>
+      </li>
+    </ul>
+  </Container>
+</section>

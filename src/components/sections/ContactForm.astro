@@ -1,0 +1,152 @@
+---
+// Formulaire de contact — Web3Forms (clé PUBLIC_WEB3FORMS_KEY dans .env).
+import Container from "../ui/Container.astro";
+import Icon from "../ui/Icon.astro";
+import { business, telephones, toE164 } from "../../config/business";
+import { produits } from "../../data/produits";
+
+interface Props {
+  withHeading?: boolean;
+  /** Pré-sélection du type de projet (pages produits). */
+  projet?: string;
+}
+const { withHeading = true, projet } = Astro.props;
+
+const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? "";
+
+const inputBase =
+  "w-full rounded-md border border-[var(--color-border)] bg-white px-4 py-2.5 text-sm placeholder:text-[var(--color-muted)]/60 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/30 focus:border-[var(--color-accent)] transition-colors";
+const labelBase = "block text-[13px] font-semibold mb-1.5";
+
+const engagements = [
+  "Devis gratuit et sans engagement",
+  "Un interlocuteur unique, de l'étude à la pose",
+  "Entreprise locale, équipe de 8 personnes",
+  "RGE Qualibat : aides et TVA réduite",
+];
+---
+
+<section id="contact" class="section-tight bg-[var(--color-tint)] scroll-mt-24">
+  <Container width="wide">
+    {withHeading && (
+      <div class="max-w-3xl mx-auto text-center mb-10">
+        <p class="eyebrow">Parlons de votre projet</p>
+        <h2>Demandez votre devis gratuit</h2>
+      </div>
+    )}
+
+    <div class="grid lg:grid-cols-[1fr_2fr] gap-6">
+      <aside class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 flex flex-col justify-between">
+        <div>
+          <p class="eyebrow">Nos engagements</p>
+          <h3 class="font-display text-[clamp(1.25rem,2vw,1.5rem)] leading-tight">
+            Du premier croquis à la pose finale.
+          </h3>
+          <ul class="mt-6 space-y-3">
+            {engagements.map((b) => (
+              <li class="flex items-start gap-3 text-[14px]">
+                <span class="mt-1 inline-flex shrink-0 items-center justify-center w-4 h-4 rounded-full bg-[var(--color-accent)] text-white"><Icon name="check" size={9} stroke={3} /></span>
+                {b}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div class="mt-8 pt-6 border-t border-[var(--color-border)] space-y-3">
+          {[telephones.menuiserie, telephones.agencement].map((l) => (
+            <a href={`tel:${toE164(l.numero)}`} class="flex items-center gap-3 group">
+              <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-[var(--color-tint)] text-[var(--color-accent)]"><Icon name="phone" size={15} /></span>
+              <span>
+                <span class="block text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[var(--color-secondary)]">{l.label}</span>
+                <span class="block text-[15px] font-medium group-hover:text-[var(--color-accent)]">{l.numero}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </aside>
+
+      <form id="contact-form" method="post" action="https://api.web3forms.com/submit" class="bg-white rounded-2xl shadow-sm p-6 sm:p-10 space-y-5">
+        <input type="hidden" name="access_key" value={web3formsKey} />
+        <input type="hidden" name="subject" value="Nouvelle demande de devis — malingeassocies.fr" />
+        <input type="hidden" name="from_name" value="Site Malinge & Associés" />
+        <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+        <div>
+          <p class="text-[13px] text-[var(--color-muted)]">Décrivez-nous votre projet, nous vous recontactons rapidement.</p>
+          <h3 class="mt-2 font-display">Vos coordonnées</h3>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-5">
+          <label class="block"><span class={labelBase}>Nom <span class="text-[var(--color-accent)]">*</span></span><input type="text" name="nom" required class={inputBase} placeholder="Nom" autocomplete="family-name" /></label>
+          <label class="block"><span class={labelBase}>Prénom <span class="text-[var(--color-accent)]">*</span></span><input type="text" name="prenom" required class={inputBase} placeholder="Prénom" autocomplete="given-name" /></label>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <label class="block"><span class={labelBase}>Téléphone <span class="text-[var(--color-accent)]">*</span></span><input type="tel" name="telephone" required class={inputBase} placeholder="06 00 00 00 00" autocomplete="tel" /></label>
+          <label class="block"><span class={labelBase}>Email <span class="text-[var(--color-accent)]">*</span></span><input type="email" name="email" required class={inputBase} placeholder="exemple@email.fr" autocomplete="email" /></label>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <label class="block"><span class={labelBase}>Commune</span><input type="text" name="commune" class={inputBase} placeholder="Beaupréau-en-Mauges" autocomplete="address-level2" /></label>
+          <label class="block">
+            <span class={labelBase}>Type de projet</span>
+            <select name="projet" class={inputBase}>
+              <option value="">— Choisir —</option>
+              {produits.map((p) => <option value={p.nom} selected={p.slug === projet}>{p.nom}</option>)}
+              <option value="Autre">Autre</option>
+            </select>
+          </label>
+        </div>
+        <label class="block"><span class={labelBase}>Votre message <span class="text-[var(--color-accent)]">*</span></span><textarea name="message" required rows="5" class={inputBase} placeholder="Décrivez votre projet (neuf / rénovation, dimensions, délais…)"></textarea></label>
+
+        <p id="contact-form-status" role="status" aria-live="polite" class="hidden text-[14px] font-medium rounded-md px-4 py-3"></p>
+
+        <div class="pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <p class="text-[11px] text-[var(--color-muted)]">Vos données sont uniquement utilisées pour traiter votre demande (RGPD).</p>
+          <button type="submit" data-default-label="Envoyer ma demande" class="inline-flex items-center justify-center rounded-md px-7 py-2.5 text-[14px] font-medium text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] shadow-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+            Envoyer ma demande
+          </button>
+        </div>
+      </form>
+    </div>
+  </Container>
+</section>
+
+<script define:vars={{ email: business.email, tel: telephones.menuiserie.numero }}>
+  const form = document.getElementById("contact-form");
+  const status = document.getElementById("contact-form-status");
+  if (form && status) {
+    const button = form.querySelector('button[type="submit"]');
+    const defaultLabel = button?.dataset.defaultLabel ?? "Envoyer";
+    const showStatus = (message, ok) => {
+      status.textContent = message;
+      status.classList.remove("hidden");
+      status.style.background = ok ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)";
+      status.style.color = ok ? "#15803d" : "#b91c1c";
+    };
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!button) return;
+      const accessKey = form.elements.namedItem("access_key")?.value;
+      if (!accessKey) {
+        showStatus(`Le formulaire n'est pas encore configuré. Écrivez-nous à ${email} ou appelez le ${tel}.`, false);
+        return;
+      }
+      button.disabled = true;
+      button.textContent = "Envoi…";
+      status.classList.add("hidden");
+      try {
+        const response = await fetch(form.action, { method: "POST", headers: { Accept: "application/json" }, body: new FormData(form) });
+        const data = await response.json();
+        if (response.ok && data.success) {
+          form.reset();
+          showStatus("Merci ! Votre demande a bien été envoyée. Nous vous recontactons rapidement.", true);
+        } else {
+          showStatus(`Une erreur est survenue. Réessayez ou appelez-nous au ${tel}.`, false);
+        }
+      } catch {
+        showStatus(`Impossible d'envoyer le message. Vérifiez votre connexion ou appelez-nous au ${tel}.`, false);
+      } finally {
+        button.disabled = false;
+        button.textContent = defaultLabel;
+      }
+    });
+  }
+</script>

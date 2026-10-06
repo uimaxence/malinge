@@ -1,0 +1,45 @@
+---
+import Container from "../ui/Container.astro";
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  text?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  secondaryLabel?: string;
+  secondaryHref?: string;
+  variant?: "tint" | "dark";
+  class?: string;
+}
+
+const {
+  eyebrow,
+  title = "Parlons de votre projet",
+  text = "Devis gratuit, visite du showroom au Pin-en-Mauges, conseil personnalisé : nous vous accompagnons du premier croquis à la pose.",
+  ctaLabel = "Demander un devis gratuit",
+  ctaHref = "/contact/",
+  secondaryLabel,
+  secondaryHref,
+  variant = "tint",
+  class: className = "",
+} = Astro.props;
+
+const dark = variant === "dark";
+---
+
+<section class:list={["section-tight", className]}>
+  <Container width="default">
+    <div class:list={["rounded-3xl p-8 sm:p-12 text-center overflow-hidden pattern-bois", dark ? "bg-[var(--color-fg)] text-white" : "bg-[var(--color-tint)]"]} style={dark ? "--pattern-color: #fff; --pattern-opacity: 0.07;" : "--pattern-opacity: 0.14;"} data-reveal="scale">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h2 class:list={["max-w-2xl mx-auto text-balance", dark && "text-white"]}>{title}</h2>
+      <p class:list={["mt-4 max-w-2xl mx-auto text-[15px] leading-relaxed", dark ? "text-white/80" : "text-[var(--color-muted)]"]}>{text}</p>
+      <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
+        <a href={ctaHref} class="inline-flex items-center rounded-full px-7 py-3 text-[14px] font-medium text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] shadow-sm transition-colors">{ctaLabel}</a>
+        {secondaryLabel && secondaryHref && (
+          <a href={secondaryHref} class:list={["inline-flex items-center rounded-full px-6 py-3 text-[14px] font-medium transition-colors border", dark ? "border-white/30 text-white hover:bg-white hover:text-[var(--color-fg)]" : "border-[var(--color-fg)] text-[var(--color-fg)] hover:bg-[var(--color-fg)] hover:text-white"]}>{secondaryLabel}</a>
+        )}
+      </div>
+    </div>
+  </Container>
+</section>

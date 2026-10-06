@@ -1,0 +1,94 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Container from "../components/ui/Container.astro";
+import Placeholder from "../components/ui/Placeholder.astro";
+import HistoireFrise from "../components/sections/HistoireFrise.astro";
+import Expertise from "../components/sections/Expertise.astro";
+import Partenaires from "../components/sections/Partenaires.astro";
+import CTASection from "../components/sections/CTASection.astro";
+import { business, agence, addressOneLine, openingHoursHuman } from "../config/business";
+import { imagesHistoire, imagesShowroom } from "../lib/media";
+import { siteGraph } from "../lib/schema";
+
+const title = "L'entreprise — Malinge & Associés, menuisier-agenceur au Pin-en-Mauges depuis 2005";
+const description =
+  "Fondée en 2005 par Michaël Malinge, Malinge & Associés réunit 8 collaborateurs au Pin-en-Mauges (49). Menuiserie neuf et rénovation, agencement et mobilier sur mesure. Showroom, RGE Qualibat, Menuisier d'Excellence MéO.";
+
+const breadcrumb = [{ label: "Accueil", href: "/" }, { label: "L'entreprise" }];
+
+const photoEquipe = imagesHistoire()[0];
+const photoShowroom = imagesShowroom()[0];
+---
+
+<BaseLayout title={title} description={description} breadcrumb={breadcrumb} schemaJsonLd={siteGraph()}>
+  <section class="section-tight">
+    <Container width="default">
+      <p class="eyebrow">L'entreprise</p>
+      <h1 class="text-balance max-w-3xl">
+        {business.name} : <span class="text-[var(--color-accent)]">20 ans</span> de menuiserie et d'agencement dans les Mauges
+      </h1>
+      <p class="mt-6 max-w-2xl text-[17px] leading-relaxed text-[var(--color-muted)]">
+        Fondée en 2005 par {business.fondateur}, l'entreprise est devenue {business.name} en 2021. Installée au Pin-en-Mauges, elle réunit aujourd'hui {business.effectif} collaborateurs — associés, salariés, apprenti et
+        secrétaire — autour de deux métiers complémentaires : la menuiserie et l'agencement sur mesure.
+      </p>
+    </Container>
+  </section>
+
+  <section class="pb-8">
+    <Container width="default">
+      {photoEquipe ? (
+        <div class="rounded-3xl overflow-hidden ring-1 ring-[var(--color-border)]">
+          <Image src={photoEquipe} alt="L'équipe Malinge & Associés" widths={[800, 1200, 1600]} sizes="(max-width: 1280px) 100vw, 1280px" loading="eager" decoding="async" format="webp" quality={82} class="w-full h-auto aspect-[16/9] object-cover" />
+        </div>
+      ) : (
+        <Placeholder label="Photo de l'équipe / atelier — src/assets/histoire/" ratio="21-9" />
+      )}
+    </Container>
+  </section>
+
+  <section class="section-tight bg-[var(--color-subtle)] pattern-bois pattern-bois-fade">
+    <Container width="default">
+      <p class="eyebrow">Notre histoire</p>
+      <h2 class="text-balance" data-reveal>De 2005 à aujourd'hui</h2>
+    </Container>
+    <HistoireFrise variant="full" class="!pt-8" />
+  </section>
+
+  <Expertise class="!pt-0" />
+
+  <!-- Showroom -->
+  <section id="showroom" class="section-tight scroll-mt-24 bg-[var(--color-tint)]">
+    <Container width="wide">
+      <div class="grid lg:grid-cols-2 gap-10 items-center">
+        <div>
+          {photoShowroom ? (
+            <div class="rounded-3xl overflow-hidden ring-1 ring-black/5">
+              <Image src={photoShowroom} alt="Le showroom Malinge & Associés au Pin-en-Mauges" widths={[600, 900, 1200]} sizes="(max-width: 1024px) 100vw, 50vw" loading="lazy" decoding="async" format="webp" quality={80} class="w-full h-auto aspect-[4/3] object-cover" />
+            </div>
+          ) : (
+            <Placeholder label="Photo du showroom — src/assets/showroom/" ratio="4-3" />
+          )}
+        </div>
+        <div>
+          <p class="eyebrow">Notre showroom</p>
+          <h2 class="text-balance">Un showroom pour voir, toucher et se projeter</h2>
+          <p class="mt-5 text-[var(--color-muted)] leading-relaxed">
+            Depuis 2023, nous vous accueillons dans nos locaux du Pin-en-Mauges : menuiseries, fermetures, échantillons
+            de matériaux et agencements y sont présentés en situation. Nous y dessinons vos plans sur mesure et
+            préparons votre devis.
+          </p>
+          <address class="mt-6 not-italic text-[14px] text-[var(--color-muted)] space-y-1">
+            <p class="text-[var(--color-fg)] font-medium">{addressOneLine()}</p>
+            {openingHoursHuman.map((h) => <p>{h}</p>)}
+          </address>
+          <a href="/contact/" class="mt-7 inline-flex items-center rounded-full px-6 py-3 text-[14px] font-medium text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] shadow-sm transition-colors">Prendre rendez-vous</a>
+        </div>
+      </div>
+    </Container>
+  </section>
+
+  <Partenaires />
+
+  <CTASection eyebrow="Un projet ?" title="Rencontrons-nous au showroom ou chez vous" secondaryLabel="Voir nos réalisations" secondaryHref="/realisations/" />
+</BaseLayout>

@@ -1,0 +1,33 @@
+---
+// Page d'accueil — ordre issu du wireframe manuscrit, frise déplacée plus
+// bas à la demande du client :
+// hero → labels → 8 produits → expertise → frise historique → zone
+// d'intervention (carte) → avis Google → partenaires → contact.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/sections/Hero.astro";
+import Certifications from "../components/sections/Certifications.astro";
+import HistoireFrise from "../components/sections/HistoireFrise.astro";
+import ProduitsGrid from "../components/sections/ProduitsGrid.astro";
+import Expertise from "../components/sections/Expertise.astro";
+import ZonesMap from "../components/sections/ZonesMap.astro";
+import AvisGoogle from "../components/sections/AvisGoogle.astro";
+import Partenaires from "../components/sections/Partenaires.astro";
+import ContactForm from "../components/sections/ContactForm.astro";
+import { siteGraph } from "../lib/schema";
+
+const title = "Malinge & Associés — Menuiserie et agencement sur mesure dans les Mauges (49)";
+const description =
+  "Menuisier-agenceur au Pin-en-Mauges (Beaupréau-en-Mauges) : portes d'entrée, fenêtres, volets, pergolas, cuisines, dressings et mobilier sur mesure. Menuisier d'Excellence MéO, RGE Qualibat. Devis gratuit.";
+---
+
+<BaseLayout title={title} description={description} schemaJsonLd={siteGraph()}>
+  <Hero />
+  <Certifications />
+  <ProduitsGrid />
+  <Expertise class="!pt-0" />
+  <HistoireFrise variant="compact" />
+  <ZonesMap variant="compact" />
+  <AvisGoogle class="bg-[var(--color-subtle)]" />
+  <Partenaires />
+  <ContactForm />
+</BaseLayout>

@@ -1,0 +1,51 @@
+---
+type Variant = "primary" | "secondary" | "outline" | "ghost" | "white";
+
+interface Props {
+  href?: string;
+  variant?: Variant;
+  arrow?: boolean;
+  class?: string;
+  type?: "button" | "submit";
+  target?: string;
+  rel?: string;
+}
+
+const {
+  href,
+  variant = "primary",
+  arrow = true,
+  class: className = "",
+  type = "button",
+  target,
+  rel,
+} = Astro.props;
+
+const base =
+  "inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium leading-none transition-all duration-200 will-change-transform";
+
+const variants: Record<Variant, string> = {
+  primary:
+    "bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-hover)] hover:-translate-y-0.5 shadow-sm",
+  secondary:
+    "bg-[var(--color-secondary)] text-white hover:bg-[var(--color-secondary-hover)] hover:-translate-y-0.5 shadow-sm",
+  outline:
+    "border border-[var(--color-fg)] text-[var(--color-fg)] hover:bg-[var(--color-fg)] hover:text-white",
+  ghost: "text-[var(--color-fg)] hover:text-[var(--color-accent)]",
+  white:
+    "bg-white/10 text-white ring-1 ring-white/30 backdrop-blur-md hover:bg-white/20",
+};
+
+const cls = `${base} ${variants[variant]} ${className}`;
+const Tag = href ? "a" : "button";
+---
+
+<Tag class={cls} {...(href ? { href, target, rel } : { type })}>
+  <slot />
+  {arrow && (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <line x1="7" y1="17" x2="17" y2="7" />
+      <polyline points="7 7 17 7 17 17" />
+    </svg>
+  )}
+</Tag>

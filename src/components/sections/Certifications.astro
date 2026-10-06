@@ -1,0 +1,41 @@
+---
+import Container from "../ui/Container.astro";
+import Icon from "../ui/Icon.astro";
+
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+
+const items: { icon: "home" | "award" | "shield" | "users"; title: string; subtitle: string; href?: string }[] = [
+  { icon: "home" as const, title: "Depuis 2005", subtitle: "Entreprise fondée au Pin-en-Mauges" },
+  { icon: "award" as const, title: "Menuisier d'Excellence", subtitle: "Membre du Club MéO, menuiseries bois-alu", href: "/menuisier-excellence-meo/" },
+  { icon: "shield" as const, title: "RGE Qualibat", subtitle: "Éligible aides & TVA réduite" },
+  { icon: "users" as const, title: "8 collaborateurs", subtitle: "Étude, fabrication et pose en interne" },
+];
+---
+
+<section class:list={["section-tight", className]}>
+  <Container width="default">
+    <ul class="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--color-border)] rounded-2xl overflow-hidden ring-1 ring-[var(--color-border)]">
+      {items.map((item, i) => (
+        <li class="bg-white" data-reveal data-reveal-delay={String(i * 80)}>
+          {(() => {
+            const Tag = item.href ? "a" : "div";
+            return (
+              <Tag {...(item.href ? { href: item.href } : {})} class:list={["h-full p-4 sm:p-6 flex flex-col sm:flex-row sm:items-start gap-3", item.href && "group hover:bg-[var(--color-tint)] transition-colors"]}>
+                <span class="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full bg-[var(--color-tint)] text-[var(--color-accent)] group-hover:bg-white transition-colors">
+                  <Icon name={item.icon} size={16} />
+                </span>
+                <div class="min-w-0">
+                  <p class="text-[13px] sm:text-sm font-semibold leading-snug">{item.title}</p>
+                  <p class="mt-1 text-[11px] sm:text-xs text-[var(--color-muted)] leading-snug">{item.subtitle}</p>
+                </div>
+              </Tag>
+            );
+          })()}
+        </li>
+      ))}
+    </ul>
+  </Container>
+</section>

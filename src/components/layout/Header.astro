@@ -1,0 +1,215 @@
+---
+// En-tête : logo, navigation (L'entreprise · Nos produits · Réalisations ·
+// Zones d'intervention) + CTA devis. Mega-menu « Nos produits » en 2 pôles.
+import Container from "../ui/Container.astro";
+import Icon from "../ui/Icon.astro";
+import logo from "../../assets/logo.png";
+import { produitsParPole, POLES } from "../../data/produits";
+import { telephones, toE164 } from "../../config/business";
+
+const pathname = Astro.url.pathname;
+const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+
+const colonnes = (["menuiserie", "agencement"] as const).map((pole) => ({
+  pole,
+  ...POLES[pole],
+  tel: telephones[pole],
+  items: produitsParPole(pole).map((p) => ({ label: p.nom, href: `/produits/${p.slug}/` })),
+}));
+
+const navItems = [
+  { label: "L'entreprise", href: "/entreprise/" },
+  { label: "Nos produits", href: "/produits/", menu: true },
+  { label: "Réalisations", href: "/realisations/" },
+  { label: "Zones d'intervention", href: "/zones-intervention/" },
+];
+---
+
+<header class="sticky top-0 z-40 bg-white border-b border-[var(--color-border)]" data-header>
+  <Container width="wide" class="flex items-center justify-between h-[4.5rem] lg:h-20 gap-6">
+    <a href="/" class="flex items-center shrink-0" aria-label="Malinge & Associés — Accueil">
+      <img
+        src={logo.src}
+        alt="Malinge & Associés — Menuiserie, Agencement"
+        width={logo.width}
+        height={logo.height}
+        loading="eager"
+        decoding="async"
+        class="h-11 lg:h-14 w-auto object-contain"
+      />
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-7" aria-label="Navigation principale">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class:list={[
+            "inline-flex items-center gap-1 py-2 text-[14px] font-medium transition-colors whitespace-nowrap",
+            isActive(item.href) ? "text-[var(--color-accent)]" : "text-[var(--color-fg)] hover:text-[var(--color-accent)]",
+          ]}
+          data-menu-trigger={item.menu ? "produits" : undefined}
+          aria-expanded={item.menu ? "false" : undefined}
+          aria-haspopup={item.menu ? "true" : undefined}
+        >
+          {item.label}
+          {item.menu && <Icon name="chevron" size={11} stroke={2.5} class="mt-0.5 transition-transform duration-200" />}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-3 shrink-0">
+      <a
+        href="/contact/"
+        class="hidden sm:inline-flex items-center rounded-full px-5 py-2.5 text-[14px] font-medium text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] transition-colors shadow-sm"
+      >
+        Demander un devis
+      </a>
+      <button
+        type="button"
+        class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-md text-[var(--color-fg)] hover:bg-[var(--color-tint)]"
+        aria-label="Ouvrir le menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-mobile-toggle
+      >
+        <span data-icon-menu><Icon name="menu" size={22} /></span>
+        <span class="hidden" data-icon-close><Icon name="close" size={22} /></span>
+      </button>
+    </div>
+  </Container>
+
+  <!-- Mega-menu Nos produits (desktop) -->
+  <div
+    class="hidden lg:block absolute left-0 right-0 top-full bg-white opacity-0 invisible transition-all duration-200 pointer-events-none border-t border-[var(--color-border)] shadow-lg"
+    data-menu-panel="produits"
+  >
+    <Container width="wide" class="py-7">
+      <div class="grid grid-cols-[1fr_1fr_auto] gap-10">
+        {colonnes.map((col) => (
+          <div>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-secondary)] mb-1">{col.label}</p>
+            <p class="text-[12px] text-[var(--color-muted)] mb-4">{col.sousTitre}</p>
+            <ul class="grid grid-cols-2 gap-1">
+              {col.items.map((sub) => (
+                <li>
+                  <a href={sub.href} class="block px-3 py-2 rounded-md text-[14px] text-[var(--color-fg)] hover:bg-[var(--color-tint)] hover:text-[var(--color-accent)] transition-colors">
+                    {sub.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a href={`tel:${toE164(col.tel.numero)}`} class="mt-4 inline-flex items-center gap-2 text-[13px] text-[var(--color-muted)] hover:text-[var(--color-accent)]">
+              <Icon name="phone" size={13} />
+              <span>{col.label} : <strong class="font-medium text-[var(--color-fg)]">{col.tel.numero}</strong></span>
+            </a>
+          </div>
+        ))}
+        <div class="w-64 rounded-2xl bg-[var(--color-tint)] p-5 flex flex-col justify-between">
+          <div>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-accent)]">Tous nos produits</p>
+            <p class="mt-2 text-[13px] text-[var(--color-muted)] leading-relaxed">
+              Huit familles de produits, du neuf à la rénovation, jusqu'au mobilier sur mesure.
+            </p>
+          </div>
+          <a href="/produits/" class="mt-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-[var(--color-accent)]">
+            Voir la gamme <Icon name="arrow" size={13} />
+          </a>
+        </div>
+      </div>
+    </Container>
+  </div>
+
+  <!-- Menu mobile -->
+  <div id="mobile-menu" class="lg:hidden hidden border-t border-[var(--color-border)] bg-white max-h-[calc(100vh-4.5rem)] overflow-y-auto">
+    <Container width="wide" class="py-4">
+      <ul class="flex flex-col gap-1">
+        <li>
+          <a href="/entreprise/" class="block px-3 py-3 text-base font-medium rounded-md hover:bg-[var(--color-tint)]">L'entreprise</a>
+        </li>
+        <li>
+          <details class="group">
+            <summary class="flex items-center justify-between px-3 py-3 text-base font-medium rounded-md cursor-pointer list-none hover:bg-[var(--color-tint)]">
+              Nos produits
+              <Icon name="chevron" size={14} stroke={2.5} class="transition-transform group-open:rotate-180" />
+            </summary>
+            <div class="ml-3 mb-2 border-l border-[var(--color-border)]">
+              {colonnes.map((col) => (
+                <div class="py-2">
+                  <p class="px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-secondary)]">{col.label}</p>
+                  <ul>
+                    {col.items.map((sub) => (
+                      <li>
+                        <a href={sub.href} class="block px-3 py-1.5 pl-5 text-sm text-[var(--color-muted)] hover:text-[var(--color-accent)]">{sub.label}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </details>
+        </li>
+        <li><a href="/realisations/" class="block px-3 py-3 text-base font-medium rounded-md hover:bg-[var(--color-tint)]">Réalisations</a></li>
+        <li><a href="/zones-intervention/" class="block px-3 py-3 text-base font-medium rounded-md hover:bg-[var(--color-tint)]">Zones d'intervention</a></li>
+        <li><a href="/contact/" class="block px-3 py-3 text-base font-medium rounded-md hover:bg-[var(--color-tint)]">Contact</a></li>
+        <li class="pt-3 grid grid-cols-2 gap-2">
+          {(["menuiserie", "agencement"] as const).map((pole) => (
+            <a href={`tel:${toE164(telephones[pole].numero)}`} class="flex flex-col items-center rounded-xl border border-[var(--color-border)] px-3 py-3 text-center">
+              <span class="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[var(--color-secondary)]">{telephones[pole].label}</span>
+              <span class="mt-1 text-sm font-medium">{telephones[pole].numero}</span>
+            </a>
+          ))}
+        </li>
+        <li class="pt-2">
+          <a href="/contact/" class="inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-[15px] font-medium text-white bg-[var(--color-accent)] shadow-sm">
+            Demander un devis
+          </a>
+        </li>
+      </ul>
+    </Container>
+  </div>
+</header>
+
+<script>
+  // Menu mobile
+  const toggle = document.querySelector<HTMLButtonElement>("[data-mobile-toggle]");
+  const menu = document.getElementById("mobile-menu");
+  const iconMenu = toggle?.querySelector<HTMLElement>("[data-icon-menu]");
+  const iconClose = toggle?.querySelector<HTMLElement>("[data-icon-close]");
+  toggle?.addEventListener("click", () => {
+    const isOpen = menu?.classList.toggle("hidden") === false;
+    toggle.setAttribute("aria-expanded", String(isOpen));
+    toggle.setAttribute("aria-label", isOpen ? "Fermer le menu" : "Ouvrir le menu");
+    iconMenu?.classList.toggle("hidden", isOpen);
+    iconClose?.classList.toggle("hidden", !isOpen);
+  });
+
+  // Mega-menu desktop (survol + focus)
+  const trigger = document.querySelector<HTMLElement>('[data-menu-trigger="produits"]');
+  const panel = document.querySelector<HTMLElement>('[data-menu-panel="produits"]');
+  let timer = 0;
+  const open = () => {
+    if (!panel || !trigger) return;
+    window.clearTimeout(timer);
+    panel.classList.remove("invisible", "pointer-events-none");
+    panel.style.opacity = "1";
+    trigger.setAttribute("aria-expanded", "true");
+    trigger.querySelector("svg")?.setAttribute("style", "transform: rotate(180deg)");
+  };
+  const close = () => {
+    if (!panel || !trigger) return;
+    timer = window.setTimeout(() => {
+      panel.classList.add("invisible", "pointer-events-none");
+      panel.style.opacity = "0";
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.querySelector("svg")?.removeAttribute("style");
+    }, 140);
+  };
+  if (trigger && panel) {
+    trigger.addEventListener("mouseenter", open);
+    trigger.addEventListener("focus", open);
+    panel.addEventListener("mouseenter", open);
+    trigger.addEventListener("mouseleave", close);
+    panel.addEventListener("mouseleave", close);
+    document.addEventListener("keydown", (e) => e.key === "Escape" && close());
+  }
+</script>

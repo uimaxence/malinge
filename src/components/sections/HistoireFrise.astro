@@ -1,0 +1,117 @@
+---
+// Frise chronologique (inspiration : Le Comptoir des Menuisiers) —
+// texte à gauche, timeline verticale à droite avec badge année + carte.
+// Animation au scroll : la ligne se dessine à mesure que l'on descend et
+// chaque étape « s'allume » (badge, point, carte) quand la ligne l'atteint.
+// Styles : global.css (« Frise chronologique »).
+import Container from "../ui/Container.astro";
+import Button from "../ui/Button.astro";
+import Icon from "../ui/Icon.astro";
+import { etapes } from "../../data/histoire";
+import { business } from "../../config/business";
+
+interface Props {
+  /** "compact" : accueil (intro + lien). "full" : page L'entreprise (sans intro). */
+  variant?: "compact" | "full";
+  class?: string;
+}
+const { variant = "compact", class: className = "" } = Astro.props;
+---
+
+<section
+  class:list={[
+    "section",
+    variant === "compact" && "bg-[var(--color-subtle)] pattern-bois pattern-bois-fade",
+    className,
+  ]}
+>
+  <Container width="wide">
+    <div class:list={["grid gap-12 lg:gap-20 items-start", variant === "compact" ? "lg:grid-cols-[1fr_1.1fr]" : ""]}>
+      {variant === "compact" && (
+        <div class="lg:sticky lg:top-28" data-reveal="left">
+          <p class="eyebrow">Notre histoire</p>
+          <h2 class="text-balance">Une entreprise des Mauges, <span class="text-[var(--color-accent)]">depuis 2005</span></h2>
+          <p class="mt-6 text-[var(--color-muted)] leading-relaxed">
+            Fondée en 2005 par {business.fondateur} au Pin-en-Mauges, l'entreprise est devenue
+            {" "}{business.name} en 2021. Elle réunit aujourd'hui {business.effectif} collaborateurs autour de deux
+            métiers : la menuiserie, en neuf comme en rénovation, et l'agencement sur mesure.
+          </p>
+          <p class="mt-4 text-[var(--color-muted)] leading-relaxed">
+            Nous sommes agréés <strong class="text-[var(--color-fg)]">RGE Qualibat</strong> pour les demandes de TVA
+            réduite et partenaire <strong class="text-[var(--color-fg)]">Menuisier d'Excellence MéO</strong>.
+          </p>
+          <div class="mt-8">
+            <Button href="/entreprise/" variant="outline">Découvrir l'entreprise</Button>
+          </div>
+        </div>
+      )}
+
+      <ol class="relative pl-[4.75rem] sm:pl-[6.5rem]" aria-label="Chronologie de l'entreprise" data-frise>
+        <!-- rail gris + ligne bleue qui se dessine au scroll -->
+        <span class="absolute left-[3.55rem] sm:left-[5.25rem] top-3 bottom-3 w-[3px] rounded-full" data-frise-line-track aria-hidden="true">
+          <span class="absolute inset-0 rounded-full bg-gradient-to-b from-[var(--color-accent)] to-[var(--color-accent)]/70" data-frise-line></span>
+        </span>
+
+        {etapes.map((e, i) => (
+          <li class:list={["relative", i < etapes.length - 1 ? "pb-10 sm:pb-12" : ""]} data-frise-item>
+            <!-- badge année -->
+            <span class="frise-badge absolute -left-[4.75rem] sm:-left-[6.5rem] top-0 inline-flex items-center justify-center h-9 sm:h-10 w-[3.75rem] sm:w-[5.25rem] rounded-lg font-display text-[13px] sm:text-[15px] font-bold">
+              {e.annee}
+            </span>
+            <!-- point sur la ligne -->
+            <span class="frise-dot absolute -left-[1.55rem] sm:-left-[1.6rem] top-3 h-4 w-4 rounded-full ring-4 ring-white shadow" aria-hidden="true"></span>
+
+            <div class="frise-card rounded-2xl bg-white p-6 shadow-[0_12px_40px_-18px_rgba(31,33,37,0.25)] ring-1 ring-black/5">
+              <span class="frise-icon inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--color-tint)] text-[var(--color-accent)]">
+                <Icon name={e.icone} size={18} />
+              </span>
+              <h3 class="mt-4 text-[17px] font-semibold">{e.titre}</h3>
+              <p class="mt-2 text-[14px] text-[var(--color-muted)] leading-relaxed">{e.texte}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </Container>
+</section>
+
+<script>
+  // La ligne bleue progresse avec le scroll : sa hauteur suit un point de
+  // lecture situé aux 2/3 de la fenêtre. Chaque étape s'allume quand la ligne
+  // dépasse son point. Une étape allumée le reste (pas de clignotement en
+  // remontant), la ligne elle, se rétracte si l'on remonte.
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  for (const frise of document.querySelectorAll<HTMLElement>("[data-frise]")) {
+    const items = Array.from(frise.querySelectorAll<HTMLElement>("[data-frise-item]"));
+    if (reduced) {
+      items.forEach((it) => it.classList.add("is-reached"));
+      frise.style.setProperty("--frise-progress", "1");
+      continue;
+    }
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const rect = frise.getBoundingClientRect();
+      const lecture = window.innerHeight * 0.68;
+      // progression 0 → 1 entre le haut et le bas de la frise
+      const p = Math.min(1, Math.max(0, (lecture - rect.top) / rect.height));
+      frise.style.setProperty("--frise-progress", p.toFixed(3));
+      const yLigne = rect.top + p * rect.height;
+      for (const it of items) {
+        const r = it.getBoundingClientRect();
+        // +14px : le point est à top-3 (12px) + demi-hauteur
+        if (yLigne >= r.top + 14) it.classList.add("is-reached");
+      }
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+  }
+</script>

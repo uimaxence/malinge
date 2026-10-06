@@ -1,0 +1,55 @@
+---
+// « Expertise sur mesure » + « Entreprise responsable » (notes manuscrites).
+import Container from "../ui/Container.astro";
+import Icon from "../ui/Icon.astro";
+import { expertise, engagements } from "../../data/histoire";
+
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+
+const blocs = [
+  {
+    eyebrow: "Expertise sur mesure",
+    titre: "Un accompagnement du premier plan à la pose",
+    icone: "ruler" as const,
+    items: expertise,
+  },
+  {
+    eyebrow: "Entreprise responsable",
+    titre: "Des choix durables, du produit au chantier",
+    icone: "leaf" as const,
+    items: engagements,
+  },
+];
+---
+
+<section class:list={["section", className]}>
+  <Container width="wide">
+    <div class="grid gap-6 lg:grid-cols-2">
+      {blocs.map((b, i) => (
+        <div class="rounded-3xl bg-[var(--color-tint-2)] p-7 sm:p-10" data-reveal data-reveal-delay={String(i * 140)}>
+          <span class="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-white text-[var(--color-secondary)] ring-1 ring-black/5">
+            <Icon name={b.icone} size={20} />
+          </span>
+          <p class="eyebrow mt-5 !text-[var(--color-secondary)]">{b.eyebrow}</p>
+          <h2 class="text-balance text-[clamp(1.375rem,2.2vw,1.75rem)]">{b.titre}</h2>
+          <ul class="mt-7 space-y-5">
+            {b.items.map((it) => (
+              <li class="flex gap-3.5">
+                <span class="mt-1 inline-flex shrink-0 items-center justify-center w-5 h-5 rounded-full bg-[var(--color-accent)] text-white">
+                  <Icon name="check" size={11} stroke={3} />
+                </span>
+                <div>
+                  <p class="font-semibold text-[15px]">{it.titre}</p>
+                  <p class="mt-1 text-[14px] text-[var(--color-muted)] leading-relaxed">{it.texte}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </Container>
+</section>

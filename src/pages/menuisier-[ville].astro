@@ -1,0 +1,73 @@
+---
+// Pages locales /menuisier-<commune>/ — gabarit provisoire.
+// ⚠️ Avant mise en ligne : rédiger un contenu réellement unique par commune
+// (src/data/communes.ts → intro), sinon laisser `noindex`.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Container from "../components/ui/Container.astro";
+import Icon from "../components/ui/Icon.astro";
+import CTASection from "../components/sections/CTASection.astro";
+import ContactForm from "../components/sections/ContactForm.astro";
+import { communes, agence } from "../data/communes";
+import { produits, POLES } from "../data/produits";
+import { communeGraph } from "../lib/schema";
+import { telephones, toE164 } from "../config/business";
+
+export function getStaticPaths() {
+  return communes.map((commune) => ({ params: { ville: commune.slug }, props: { commune } }));
+}
+
+const { commune } = Astro.props;
+
+const pageTitle = `Menuisier à ${commune.nom} (49) — Portes, fenêtres, agencement sur mesure`;
+const description = `Malinge & Associés, menuisier-agenceur à ${commune.nom} : portes d'entrée, fenêtres, volets, pergolas, cuisines et dressings sur mesure. Menuisier d'Excellence MéO, RGE Qualibat. Devis gratuit.`;
+
+const breadcrumb = [
+  { label: "Accueil", href: "/" },
+  { label: "Zones d'intervention", href: "/zones-intervention/" },
+  { label: commune.nom },
+];
+
+const distanceTexte =
+  commune.distanceKm === 0
+    ? `Notre atelier-showroom se trouve au Pin-en-Mauges, sur la commune même.`
+    : `Notre atelier-showroom du Pin-en-Mauges est à environ ${commune.distanceKm} km.`;
+---
+
+<BaseLayout title={pageTitle} description={description} breadcrumb={breadcrumb} schemaJsonLd={communeGraph(commune)} noindex>
+  <section class="section-tight bg-[var(--color-tint)]">
+    <Container width="default">
+      <p class="eyebrow">Menuisier · agenceur · {commune.codePostal}</p>
+      <h1 class="text-balance max-w-3xl">Menuisier et agenceur à {commune.nom}</h1>
+      <p class="mt-6 max-w-2xl text-[17px] leading-relaxed text-[var(--color-fg)]">{commune.intro}</p>
+      <p class="mt-3 max-w-2xl text-[15px] text-[var(--color-muted)]">{distanceTexte} Devis gratuit, prise de cotes à domicile.</p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        {[telephones.menuiserie, telephones.agencement].map((l) => (
+          <a href={`tel:${toE164(l.numero)}`} class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[14px] font-medium ring-1 ring-black/5 hover:ring-[var(--color-accent)] transition-colors">
+            <Icon name="phone" size={14} class="text-[var(--color-accent)]" />
+            <span class="text-[11px] uppercase tracking-[0.12em] text-[var(--color-secondary)] font-semibold">{l.label}</span> {l.numero}
+          </a>
+        ))}
+      </div>
+    </Container>
+  </section>
+
+  <section class="section-tight">
+    <Container width="wide">
+      <h2 class="mb-8">Nos prestations à {commune.nom}</h2>
+      <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {produits.map((p) => (
+          <li>
+            <a href={`/produits/${p.slug}/`} class="group flex h-full flex-col rounded-2xl bg-white ring-1 ring-[var(--color-border)] p-5 hover:ring-[var(--color-accent)] hover:shadow-md transition-all">
+              <span class="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--color-secondary)]">{POLES[p.pole].label}</span>
+              <h3 class="mt-1.5 text-[16px] group-hover:text-[var(--color-accent)] transition-colors">{p.nom}</h3>
+              <p class="mt-2 text-[13px] text-[var(--color-muted)] leading-relaxed">{p.sousProduits.map((s) => s.nom).join(" · ")}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </Container>
+  </section>
+
+  <CTASection eyebrow={`Votre projet à ${commune.nom}`} title="Un interlocuteur unique, de l'étude à la pose" secondaryLabel="Nos réalisations" secondaryHref="/realisations/" />
+  <ContactForm withHeading={false} />
+</BaseLayout>

@@ -1,0 +1,80 @@
+---
+// Configurateur de porte d'entrée MéO — intégré à la catégorie « Portes
+// d'entrée » (demande client) et à la page Menuisier d'Excellence.
+// MéO propose un configurateur en ligne sur un site dédié (portemeo.com) :
+// composition de la porte, simulation sur la photo de la maison, fiche
+// détaillée à télécharger. Deux modes :
+//   1. lien externe (par défaut, robuste) ;
+//   2. iframe intégrée si MéO fournit une URL embarquable (passer `embedUrl`).
+// TODO client / MéO : code revendeur éventuel pour que les demandes de devis
+// faites depuis le configurateur remontent chez Malinge & Associés.
+import Container from "../ui/Container.astro";
+import Icon from "../ui/Icon.astro";
+import { telephones, toE164 } from "../../config/business";
+import { meo } from "../../data/meo";
+
+interface Props {
+  href?: string;
+  embedUrl?: string;
+  class?: string;
+}
+const {
+  href = meo.configurateur,
+  embedUrl,
+  class: className = "",
+} = Astro.props;
+---
+
+<section id="configurateur" class:list={["section-tight scroll-mt-24", className]}>
+  <Container width="default">
+    <div class="rounded-3xl bg-[var(--color-fg)] text-white overflow-hidden">
+      <div class="grid lg:grid-cols-[1.1fr_1fr]">
+        <div class="p-8 sm:p-12">
+          <p class="eyebrow">Configurateur MéO</p>
+          <h2 class="text-white text-balance">Dessinez votre porte d'entrée en ligne</h2>
+          <p class="mt-4 text-white/80 leading-relaxed text-[15px]">
+            Menuisier d'Excellence MéO, nous vous proposons de composer votre porte d'entrée bois-aluminium parmi les {meo.gamme[1].texte.split(" ")[0]} modèles du fabricant :
+            forme, couleurs intérieure et extérieure, vitrage, poignée. Vous pouvez même la voir sur la photo de votre maison.
+          </p>
+          <ol class="mt-6 space-y-3 text-[14px] text-white/85">
+            {[
+              "Composez votre porte dans le configurateur, puis simulez-la sur la photo de votre façade.",
+              "Téléchargez la fiche détaillée de votre porte.",
+              "Transmettez-la nous : nous la chiffrons avec la pose, et nous l'ajustons avec vous au showroom du Pin-en-Mauges.",
+            ].map((t, i) => (
+              <li class="flex gap-3">
+                <span class="inline-flex shrink-0 items-center justify-center w-6 h-6 rounded-full bg-[var(--color-accent)] text-[12px] font-bold">{i + 1}</span>
+                <span>{t}</span>
+              </li>
+            ))}
+          </ol>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href={href} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-[14px] font-medium text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] transition-colors">
+              Ouvrir le configurateur MéO <Icon name="external" size={14} />
+            </a>
+            <a href="/contact/" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-[14px] font-medium text-white ring-1 ring-white/30 hover:bg-white/10 transition-colors">
+              Envoyer ma configuration
+            </a>
+          </div>
+          <p class="mt-5 text-[13px] text-white/60">
+            Une question ? Menuiserie :
+            <a href={`tel:${toE164(telephones.menuiserie.numero)}`} class="text-white hover:underline">{telephones.menuiserie.numero}</a>
+          </p>
+        </div>
+        <div class="relative min-h-[280px] bg-white/5">
+          {embedUrl ? (
+            <iframe src={embedUrl} title="Configurateur de porte d'entrée MéO" loading="lazy" class="absolute inset-0 w-full h-full border-0 bg-white"></iframe>
+          ) : (
+            <div class="absolute inset-0 flex items-center justify-center p-8 text-center text-white/60">
+              <div>
+                <Icon name="door" size={40} stroke={1.4} class="mx-auto mb-3 opacity-70" />
+                <p class="text-[13px] uppercase tracking-[0.14em]">Le configurateur s'ouvre sur le site de MéO</p>
+                <p class="mt-2 text-[12px] text-white/50">Composition, simulation sur photo, fiche détaillée, demande de devis.</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>

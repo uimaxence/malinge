@@ -1,0 +1,77 @@
+---
+// Hero d'accueil : accroche + badges (Menuisier d'Excellence MéO, RGE Qualibat)
+// + visuel. Le visuel est la première image de src/assets/hero/ (sinon
+// emplacement réservé).
+import { Image } from "astro:assets";
+import Container from "../ui/Container.astro";
+import Button from "../ui/Button.astro";
+import Placeholder from "../ui/Placeholder.astro";
+import Icon from "../ui/Icon.astro";
+import { imagesHero } from "../../lib/media";
+import { business, agence } from "../../config/business";
+
+const hero = imagesHero()[0];
+---
+
+<section class="relative isolate overflow-hidden bg-[var(--color-tint)] pattern-bois pattern-bois-fade" style="--pattern-opacity: 0.16;" data-hero-section>
+  <div class="pointer-events-none absolute -right-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-[var(--color-accent)]/10 blur-3xl" aria-hidden="true"></div>
+  <Container width="wide" class="relative py-14 sm:py-20 lg:py-24">
+    <div class="grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-16 items-center">
+      <div class="max-w-2xl">
+        <p class="eyebrow">Menuiserie &amp; agencement · {agence.lieuDit} (49)</p>
+        <h1 class="text-balance">
+          Menuiserie et agencement <span class="text-[var(--color-accent)]">sur mesure</span> dans les Mauges
+        </h1>
+        <p class="mt-5 text-[15px] sm:text-[17px] leading-relaxed text-[var(--color-muted)] max-w-xl">
+          Depuis 2005, {business.name} conçoit, fabrique et pose vos portes, fenêtres, fermetures et protections
+          solaires, et réalise cuisines, dressings et mobilier sur mesure. Une équipe locale, un interlocuteur unique,
+          de l'étude à la pose.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <Button href="/contact/">Demander un devis gratuit</Button>
+          <Button href="/produits/" variant="outline" arrow={false}>Découvrir nos produits</Button>
+        </div>
+
+        <ul class="mt-9 flex flex-wrap gap-x-6 gap-y-3">
+          {[
+            { icon: "award" as const, label: "Menuisier d'Excellence MéO" },
+            { icon: "shield" as const, label: "RGE Qualibat · TVA réduite" },
+            { icon: "ruler" as const, label: "Fabrication & pose sur mesure" },
+          ].map((b) => (
+            <li class="inline-flex items-center gap-2 text-[13px] font-medium text-[var(--color-fg)]">
+              <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-white text-[var(--color-accent)] ring-1 ring-black/5">
+                <Icon name={b.icon} size={14} />
+              </span>
+              {b.label}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="relative">
+        {hero ? (
+          <div class="rounded-3xl overflow-hidden ring-1 ring-black/5 shadow-xl">
+            <Image
+              src={hero}
+              alt="Réalisation Malinge & Associés — menuiserie et agencement sur mesure"
+              widths={[600, 900, 1200]}
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              loading="eager"
+              decoding="async"
+              format="webp"
+              quality={80}
+              class="w-full h-full aspect-[4/3] object-cover"
+            />
+          </div>
+        ) : (
+          <Placeholder label="Photo hero — déposer dans src/assets/hero/" ratio="4-3" class="shadow-xl" />
+        )}
+        <div class="absolute -bottom-5 -left-3 sm:-left-6 rounded-2xl bg-white shadow-lg ring-1 ring-black/5 px-5 py-4">
+          <p class="font-display text-2xl font-bold text-[var(--color-accent)] leading-none">20<span class="text-lg">+</span></p>
+          <p class="mt-1 text-[12px] text-[var(--color-muted)]">ans de savoir-faire</p>
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>

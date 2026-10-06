@@ -1,0 +1,56 @@
+---
+// Bandeau des partenaires / fournisseurs. Logo détecté dans
+// src/assets/partenaires/<slug>.png|svg|webp ; sinon nom en toutes lettres.
+import { Image } from "astro:assets";
+import Container from "../ui/Container.astro";
+import Icon from "../ui/Icon.astro";
+import { partenaires } from "../../data/partenaires";
+import { logoPartenaire } from "../../lib/media";
+
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+
+const items = partenaires.map((p) => ({ ...p, logo: logoPartenaire(p.slug) }));
+---
+
+<section class:list={["section-tight bg-white pattern-bois pattern-bois-fade", className]} style="--pattern-opacity: 0.2;">
+  <Container width="wide">
+    <div class="text-center max-w-2xl mx-auto mb-10" data-reveal>
+      <p class="eyebrow">Nos partenaires</p>
+      <h2 class="text-balance">Des marques et fournisseurs sélectionnés</h2>
+    </div>
+
+    <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      {items.map((p) => {
+        const Tag = p.url ? "a" : "div";
+        const externe = Boolean(p.url && /^https?:/.test(p.url));
+        return (
+          <li>
+            <Tag
+              {...(p.url ? { href: p.url, ...(externe ? { target: "_blank", rel: "noopener noreferrer" } : {}) } : {})}
+              class:list={[
+                "group relative flex h-24 items-center justify-center rounded-2xl bg-white ring-1 px-5 transition-all",
+                p.principal ? "ring-[var(--color-accent)]/40 shadow-sm" : "ring-[var(--color-border)]",
+                p.url && "hover:ring-[var(--color-accent)] hover:shadow-md",
+              ]}
+              title={p.role}
+            >
+              {p.logo ? (
+                <Image src={p.logo} alt={`Logo ${p.nom}`} widths={[160, 320]} sizes="160px" loading="lazy" decoding="async" class="max-h-10 w-auto object-contain grayscale opacity-80 transition group-hover:grayscale-0 group-hover:opacity-100" />
+              ) : (
+                <span class="font-display text-[15px] font-semibold text-[var(--color-fg)]/70 text-center leading-tight">{p.nom}</span>
+              )}
+              {p.principal && (
+                <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full bg-[var(--color-accent)] px-2.5 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.12em] text-white whitespace-nowrap">
+                  <Icon name="award" size={10} /> Menuisier d'Excellence
+                </span>
+              )}
+            </Tag>
+          </li>
+        );
+      })}
+    </ul>
+  </Container>
+</section>
