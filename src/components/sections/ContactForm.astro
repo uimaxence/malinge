@@ -2,6 +2,7 @@
 // Formulaire de contact — Web3Forms (clé PUBLIC_WEB3FORMS_KEY dans .env).
 import Container from "../ui/Container.astro";
 import Icon from "../ui/Icon.astro";
+import LogoMeo from "../ui/LogoMeo.astro";
 import { business, telephones, toE164 } from "../../config/business";
 import { produits } from "../../data/produits";
 
@@ -50,6 +51,13 @@ const engagements = [
               </li>
             ))}
           </ul>
+          <a href="/menuisier-excellence-meo/" class="group mt-7 flex items-center gap-4 rounded-xl ring-1 ring-[var(--color-border)] p-3.5 hover:ring-[var(--color-accent)]/50 transition-shadow">
+            <LogoMeo alt="" class="h-14 w-auto shrink-0" />
+            <span>
+              <span class="block text-[14px] font-semibold leading-snug group-hover:text-[var(--color-accent)] transition-colors">Menuisier d'Excellence MéO</span>
+              <span class="block mt-0.5 text-[12.5px] text-[var(--color-muted)] leading-snug">Membre du Club MéO, menuiseries bois-alu</span>
+            </span>
+          </a>
         </div>
         <div class="mt-8 pt-6 border-t border-[var(--color-border)] space-y-3">
           {[telephones.menuiserie, telephones.agencement].map((l) => (

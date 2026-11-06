@@ -4,6 +4,7 @@
 // aucune note ni aucun avis inventés.
 import Container from "../ui/Container.astro";
 import Icon from "../ui/Icon.astro";
+import LogoMeo from "../ui/LogoMeo.astro";
 import { avisGlobal, avisGoogle } from "../../lib/avis";
 
 interface Props {
@@ -43,10 +44,13 @@ function initiales(nom: string): string {
             <span>Voir notre fiche Google</span>
           )}
         </a>
-        <span class="inline-flex items-center gap-2.5 rounded-full border border-black/8 bg-white px-4 py-2 text-[13px] font-medium shadow-sm">
-          <Icon name="award" size={15} class="text-[var(--color-accent)]" />
+        <a
+          href="/menuisier-excellence-meo/"
+          class="inline-flex items-center gap-2.5 rounded-full border border-black/8 bg-white pl-3 pr-4 py-1 text-[13px] font-medium shadow-sm hover:shadow-md transition-shadow"
+        >
+          <LogoMeo alt="" class="h-7 w-auto" />
           <span>Menuisier d'Excellence MéO</span>
-        </span>
+        </a>
       </div>
     </div>
 

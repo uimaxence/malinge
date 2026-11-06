@@ -1,0 +1,20 @@
+---
+// Logo du label « Menuisiers d'Excellence MéO » (src/assets/partenaires/meo.png).
+// Le bas du logo est transparent : le poser sur un fond blanc. Passer
+// `alt=""` quand le nom du label est écrit juste à côté.
+import { Image } from "astro:assets";
+import { logoPartenaire } from "../../lib/media";
+
+interface Props {
+  alt?: string;
+  class?: string;
+  loading?: "lazy" | "eager";
+}
+const { alt = "Logo Menuisiers d'Excellence MéO", class: className = "h-10 w-auto", loading = "lazy" } = Astro.props;
+
+const logo = logoPartenaire("meo");
+---
+
+{logo && (
+  <Image src={logo} alt={alt} widths={[64, 128, 192]} sizes="64px" loading={loading} decoding="async" class:list={["object-contain", className]} />
+)}
