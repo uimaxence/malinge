@@ -13,7 +13,7 @@ export const etapes: Etape[] = [
   {
     annee: "2005",
     titre: "Création de l'entreprise",
-    texte: "Michaël Malinge fonde l'entreprise de menuiserie au Pin-en-Mauges.",
+    texte: "Mickaël Malinge fonde l'entreprise de menuiserie au Pin-en-Mauges.",
     icone: "home",
   },
   {

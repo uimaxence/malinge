@@ -1,0 +1,57 @@
+---
+// « L'équipe » (page L'entreprise) : une carte par membre de
+// src/data/equipe.ts. Le portrait vient de src/assets/equipe/<slug>.jpg ;
+// tant qu'il manque, la carte garde un emplacement « Photo à venir ».
+import { Image } from "astro:assets";
+import Container from "../ui/Container.astro";
+import Placeholder from "../ui/Placeholder.astro";
+import { equipe, nomComplet, libellePoles } from "../../data/equipe";
+import { portraitMembre } from "../../lib/media";
+
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+
+const membres = equipe.map((m) => ({ ...m, portrait: portraitMembre(m.slug) }));
+---
+
+<section id="equipe" class:list={["section scroll-mt-24", className]}>
+  <Container width="default">
+    <div class="max-w-3xl" data-reveal>
+      <p class="eyebrow">L'équipe</p>
+      <h2 class="text-balance">Les visages de l'atelier</h2>
+      <p class="mt-4 text-base sm:text-lg text-[var(--color-muted)] leading-relaxed">
+        Ceux qui dessinent, fabriquent et posent vos projets, au Pin-en-Mauges et sur vos chantiers.
+      </p>
+    </div>
+
+    <ul class="mt-10 sm:mt-12 grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-8 sm:gap-x-6">
+      {membres.map((m, i) => (
+        <li data-reveal data-reveal-delay={String(i * 90)}>
+          <div class="overflow-hidden rounded-2xl bg-[var(--color-tint-2)] ring-1 ring-black/5">
+            {m.portrait ? (
+              <Image
+                src={m.portrait}
+                alt={`${nomComplet(m)}, ${m.fonction.toLowerCase()}${m.geste ? `, ${m.geste}` : ""}`}
+                widths={[320, 480, 640, 800]}
+                sizes="(max-width: 1024px) 46vw, 300px"
+                loading="lazy"
+                decoding="async"
+                format="webp"
+                quality={80}
+                class="w-full aspect-[4/5] object-cover"
+              />
+            ) : (
+              <Placeholder label={`Photo à venir — ${nomComplet(m)}`} ratio="auto" rounded={false} class="aspect-[4/5] !border-0" />
+            )}
+          </div>
+          <h3 class="mt-4 text-[16px] sm:text-[17px] font-semibold leading-snug">{nomComplet(m)}</h3>
+          <p class="mt-1 text-[13.5px] sm:text-[14px] text-[var(--color-muted)] leading-snug">{m.fonction}</p>
+          <p class="mt-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-accent)]">{libellePoles(m)}</p>
+        </li>
+      ))}
+    </ul>
+    <!-- TODO client : portrait de Maxime Veron et des autres collaborateurs (src/data/equipe.ts). -->
+  </Container>
+</section>

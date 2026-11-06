@@ -9,11 +9,14 @@
 // Animation au scroll : la ligne se dessine à mesure que l'on descend et
 // chaque étape « s'allume » (année, point, connecteur, carte) quand la ligne
 // l'atteint. Styles : global.css (« Frise chronologique »).
+import { Image } from "astro:assets";
 import Container from "../ui/Container.astro";
 import Button from "../ui/Button.astro";
 import Icon from "../ui/Icon.astro";
 import { etapes } from "../../data/histoire";
 import { business } from "../../config/business";
+import { equipe, nomComplet, enumerer } from "../../data/equipe";
+import { portraitMembre } from "../../lib/media";
 
 interface Props {
   /** "compact" : accueil (intro + lien). "full" : page L'entreprise (sans intro). */
@@ -21,6 +24,9 @@ interface Props {
   class?: string;
 }
 const { variant = "compact", class: className = "" } = Astro.props;
+
+// Accueil : portraits de l'équipe sous le texte (src/assets/equipe/).
+const visages = equipe.map((m) => ({ ...m, portrait: portraitMembre(m.slug) })).filter((m) => m.portrait);
 
 const carte = "frise-card rounded-2xl bg-white p-6 shadow-[0_12px_40px_-18px_rgba(31,33,37,0.25)] ring-1 ring-black/5";
 const icone = "frise-icon inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--color-tint)] text-[var(--color-accent)]";
@@ -48,6 +54,20 @@ const icone = "frise-icon inline-flex items-center justify-center w-10 h-10 roun
             Nous sommes agréés <strong class="text-[var(--color-fg)]">RGE Qualibat</strong> pour les demandes de TVA
             réduite et partenaire <strong class="text-[var(--color-fg)]">Menuisier d'Excellence MéO</strong>.
           </p>
+          {visages.length >= 2 && (
+            <figure class="mt-8 max-w-md">
+              <div class="grid grid-cols-3 gap-3">
+                {visages.slice(0, 3).map((m) => (
+                  <a href="/entreprise/#equipe" class="group block overflow-hidden rounded-2xl ring-1 ring-black/5 bg-white" aria-label={`${nomComplet(m)}, ${m.fonction.toLowerCase()} : voir l'équipe`}>
+                    <Image src={m.portrait!} alt="" widths={[160, 240, 320, 480]} sizes="(max-width: 640px) 30vw, 150px" loading="lazy" decoding="async" format="webp" quality={78} class="w-full aspect-[4/5] object-cover transition-transform duration-500 group-hover:scale-105" />
+                  </a>
+                ))}
+              </div>
+              <figcaption class="mt-3 text-[13px] text-[var(--color-muted)]">
+                {enumerer(visages.slice(0, 3).map((m) => m.prenom))}, à l'atelier du Pin-en-Mauges.
+              </figcaption>
+            </figure>
+          )}
           <div class="mt-8">
             <Button href="/entreprise/" variant="outline">Découvrir l'entreprise</Button>
           </div>

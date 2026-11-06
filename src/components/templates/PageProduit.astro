@@ -1,7 +1,7 @@
 ---
 // Gabarit des pages /produits/<slug>/ : hero, galerie auto, sous-produits,
-// contenu, configurateur MéO (portes d'entrée), gamme MéO (fenêtres, portes),
-// réalisations liées, CTA.
+// contenu, équipe du pôle à l'atelier (agencement), configurateur MéO (portes
+// d'entrée), gamme MéO (fenêtres, portes), réalisations liées, CTA.
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 import Container from "../ui/Container.astro";
@@ -9,6 +9,7 @@ import Placeholder from "../ui/Placeholder.astro";
 import Icon from "../ui/Icon.astro";
 import MeoConfigurateur from "../sections/MeoConfigurateur.astro";
 import MeoGamme from "../sections/MeoGamme.astro";
+import EquipeAtelier from "../sections/EquipeAtelier.astro";
 import ContactForm from "../sections/ContactForm.astro";
 import type { Produit } from "../../data/produits";
 import { POLES } from "../../data/produits";
@@ -86,6 +87,8 @@ const realisations = (await getCollection("realisations", ({ data }) => !data.dr
     </div>
   </Container>
 </section>
+
+<EquipeAtelier pole={produit.pole} />
 
 {produit.configurateurMeo && <MeoConfigurateur class="!pt-0" />}
 

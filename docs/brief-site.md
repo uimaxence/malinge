@@ -6,7 +6,7 @@ attendent une information.
 
 ## 1. Notes « Histoire Malinge » (`brief/notes-histoire-et-categories.pdf`, p. 1)
 
-- Fondée en **2005** par **Michaël Malinge**.
+- Fondée en **2005** par **Mickaël Malinge** (orthographe du prénom corrigée le 06/11/2026 : Annuaire des entreprises et fichiers du client).
 - L'entreprise change de nom et devient **Malinge & Associés en 2021**.
 - **Achat du bâtiment en 2023** et création du **showroom**.
 - **2026** : l'entreprise compte **8 collaborateurs** (associés, salariés, apprenti, secrétaire).
@@ -78,7 +78,8 @@ Les pages communes sont en `noindex` tant que le contenu n'est pas unique.
 
 ## 7. Ce qu'il manque pour finaliser
 
-- [ ] Photos (voir conventions dans `CLAUDE.md`). Lot Menuiserie trié le 05/10/2026 (`docs/photos-menuiserie.md`) : hero, portes d'entrée, fenêtres, fermetures, cuisines et mobilier sont pourvus. Restent : équipe/atelier, showroom, protection solaire, dressing, extérieur, lot agencement, photos classées par chantier pour les réalisations.
+- [ ] Photos (voir conventions dans `CLAUDE.md`). Lot Menuiserie trié le 05/10/2026 (`docs/photos-menuiserie.md`) : hero, portes d'entrée, fenêtres, fermetures, cuisines et mobilier sont pourvus. Lot « personnel » du 06/11/2026 (4 photos à l'atelier) : page L'entreprise, frise de l'accueil et pages du pôle agencement pourvues. Restent : showroom, protection solaire, extérieur, photos classées par chantier pour les réalisations.
+- [ ] Équipe (`src/data/equipe.ts`) : portrait de Maxime Veron ; prénoms, fonctions et photos des autres collaborateurs ; nom de la personne sur `IMG_0925` (photo d'atelier publiée sans nom en tête de la page L'entreprise) ; accord de chacun pour la publication de sa photo (accord parental si l'apprenti est mineur).
 - [ ] Logos partenaires (`src/assets/partenaires/<slug>.png`), noms complets de « S.B » et « Men 85 ».
 - [ ] URL du configurateur MéO + éventuel code revendeur.
 - [x] Place ID Google Business (avis) : renseigné le 06/11/2026, clé `GOOGLE_PLACES_API_KEY` dans `.env` et sur Vercel.

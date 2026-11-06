@@ -10,6 +10,8 @@
 //   src/assets/hero/*.{jpg,png,webp}                → visuel du hero d'accueil
 //   src/assets/showroom/*.{jpg,png,webp}            → showroom (entreprise, contact)
 //   src/assets/histoire/*.{jpg,png,webp}            → page L'entreprise
+//   src/assets/equipe/<slug>.{jpg,png,webp}         → portrait d'un membre (slug de equipe.ts)
+//   src/assets/equipe/atelier/<slug>.{jpg,png,webp} → le même membre à l'atelier (vue large)
 
 import type { ImageMetadata } from "astro";
 
@@ -40,6 +42,15 @@ const histoireGlob = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true },
 );
 
+const equipeGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "../assets/equipe/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true },
+);
+const equipeAtelierGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "../assets/equipe/atelier/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true },
+);
+
 function sorted(glob: Glob, filter: (path: string) => boolean): ImageMetadata[] {
   return Object.entries(glob)
     .filter(([p]) => filter(p))
@@ -59,3 +70,14 @@ export const logoPartenaire = (slug: string): ImageMetadata | undefined =>
 export const imagesHero = (): ImageMetadata[] => sorted(heroGlob, () => true);
 export const imagesShowroom = (): ImageMetadata[] => sorted(showroomGlob, () => true);
 export const imagesHistoire = (): ImageMetadata[] => sorted(histoireGlob, () => true);
+
+const parSlug = (glob: Glob, dossier: string, slug: string): ImageMetadata | undefined =>
+  sorted(glob, (p) => new RegExp(`/${dossier}/${slug}\\.[a-z]+$`).test(p))[0];
+
+/** Portrait serré d'un membre de l'équipe (slug de src/data/equipe.ts). */
+export const portraitMembre = (slug: string): ImageMetadata | undefined =>
+  parSlug(equipeGlob, "equipe", slug);
+
+/** Vue large du même membre à l'atelier. */
+export const photoAtelierMembre = (slug: string): ImageMetadata | undefined =>
+  parSlug(equipeAtelierGlob, "equipe/atelier", slug);

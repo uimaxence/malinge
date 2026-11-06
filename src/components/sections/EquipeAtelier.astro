@@ -1,0 +1,68 @@
+---
+// « Notre atelier » : les membres d'un pôle photographiés à l'atelier
+// (src/assets/equipe/atelier/<slug>.jpg). Affiché sur les pages produit du
+// pôle ; ne rend rien tant que le pôle compte moins de deux photos.
+import { Image } from "astro:assets";
+import Container from "../ui/Container.astro";
+import Button from "../ui/Button.astro";
+import { equipe, nomComplet } from "../../data/equipe";
+import type { Pole } from "../../data/produits";
+import { photoAtelierMembre } from "../../lib/media";
+
+interface Props {
+  pole: Pole;
+  class?: string;
+}
+const { pole, class: className = "" } = Astro.props;
+
+const membres = equipe
+  .filter((m) => m.poles.includes(pole))
+  .map((m) => ({ ...m, photo: photoAtelierMembre(m.slug) }))
+  .filter((m) => m.photo);
+---
+
+{membres.length >= 2 && (
+  <section class:list={["section-tight bg-[var(--color-tint-2)]", className]}>
+    <Container width="default">
+      <div class="grid gap-10 lg:gap-16 items-center lg:grid-cols-[0.8fr_1.2fr]">
+        <div data-reveal="left">
+          <p class="eyebrow !text-[var(--color-secondary)]">Notre atelier</p>
+          <h2 class="text-balance">Fabriqué dans notre atelier, par notre équipe</h2>
+          <p class="mt-5 text-[var(--color-muted)] leading-relaxed">
+            Conception, fabrication et pose : les projets du pôle {pole} prennent forme dans notre atelier du
+            Pin-en-Mauges, puis sont posés chez vous par nos menuisiers-agenceurs.
+          </p>
+          <div class="mt-7">
+            <Button href="/entreprise/#equipe" variant="outline">Rencontrer l'équipe</Button>
+          </div>
+        </div>
+
+        <ul class="grid grid-cols-3 gap-2.5 sm:gap-4">
+          {membres.map((m, i) => (
+            <li data-reveal data-reveal-delay={String(i * 110)}>
+              <figure>
+                <div class="overflow-hidden rounded-xl sm:rounded-2xl ring-1 ring-black/5 bg-white">
+                  <Image
+                    src={m.photo!}
+                    alt={`${nomComplet(m)}${m.geste ? ` ${m.geste}` : ""}, dans l'atelier Malinge & Associés`}
+                    widths={[240, 360, 480, 640]}
+                    sizes="(max-width: 1024px) 31vw, 240px"
+                    loading="lazy"
+                    decoding="async"
+                    format="webp"
+                    quality={78}
+                    class="w-full aspect-[3/4] object-cover"
+                  />
+                </div>
+                <figcaption class="mt-3">
+                  <span class="block text-[13px] sm:text-[15px] font-semibold leading-snug">{nomComplet(m)}</span>
+                  <span class="block mt-0.5 text-[12px] sm:text-[13px] text-[var(--color-muted)] leading-snug">{m.fonction}</span>
+                </figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Container>
+  </section>
+)}

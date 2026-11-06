@@ -53,7 +53,7 @@ export const business = {
   siret: null as string | null,
   url: SITE_URL,
   foundingDate: "2005",
-  fondateur: "Michaël Malinge",
+  fondateur: "Mickaël Malinge",
   email: "contact@malingeassocies.fr",
   priceRange: "€€",
   logo: `${SITE_URL}/logo-malinge.png`,

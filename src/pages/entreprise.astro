@@ -4,6 +4,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Container from "../components/ui/Container.astro";
 import Placeholder from "../components/ui/Placeholder.astro";
 import HistoireFrise from "../components/sections/HistoireFrise.astro";
+import Equipe from "../components/sections/Equipe.astro";
 import Expertise from "../components/sections/Expertise.astro";
 import Partenaires from "../components/sections/Partenaires.astro";
 import CTASection from "../components/sections/CTASection.astro";
@@ -13,7 +14,7 @@ import { siteGraph } from "../lib/schema";
 
 const title = "L'entreprise — Malinge & Associés, menuisier-agenceur au Pin-en-Mauges depuis 2005";
 const description =
-  "Fondée en 2005 par Michaël Malinge, Malinge & Associés réunit 8 collaborateurs au Pin-en-Mauges (49). Menuiserie neuf et rénovation, agencement et mobilier sur mesure. Showroom, RGE Qualibat, Menuisier d'Excellence MéO.";
+  "Fondée en 2005 par Mickaël Malinge, Malinge & Associés réunit 8 collaborateurs au Pin-en-Mauges (49). Menuiserie neuf et rénovation, agencement et mobilier sur mesure. Showroom, RGE Qualibat, Menuisier d'Excellence MéO.";
 
 const breadcrumb = [{ label: "Accueil", href: "/" }, { label: "L'entreprise" }];
 
@@ -39,7 +40,7 @@ const photoShowroom = imagesShowroom()[0];
     <Container width="default">
       {photoEquipe ? (
         <div class="rounded-3xl overflow-hidden ring-1 ring-[var(--color-border)]">
-          <Image src={photoEquipe} alt="L'équipe Malinge & Associés" widths={[800, 1200, 1600]} sizes="(max-width: 1280px) 100vw, 1280px" loading="eager" decoding="async" format="webp" quality={82} class="w-full h-auto aspect-[16/9] object-cover" />
+          <Image src={photoEquipe} alt="Un menuisier-agenceur de Malinge & Associés usine un panneau dans l'atelier du Pin-en-Mauges" widths={[800, 1200, 1600]} sizes="(max-width: 1280px) 100vw, 1280px" loading="eager" decoding="async" format="webp" quality={82} class="w-full h-auto aspect-[16/9] object-cover" />
         </div>
       ) : (
         <Placeholder label="Photo de l'équipe / atelier — src/assets/histoire/" ratio="21-9" />
@@ -54,6 +55,8 @@ const photoShowroom = imagesShowroom()[0];
     </Container>
     <HistoireFrise variant="full" class="!pt-8" />
   </section>
+
+  <Equipe />
 
   <Expertise class="!pt-0" />
 
