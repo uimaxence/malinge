@@ -81,7 +81,8 @@ Les pages communes sont en `noindex` tant que le contenu n'est pas unique.
 - [ ] Photos (voir conventions dans `CLAUDE.md`). Lot Menuiserie trié le 05/10/2026 (`docs/photos-menuiserie.md`) : hero, portes d'entrée, fenêtres, fermetures, cuisines et mobilier sont pourvus. Restent : équipe/atelier, showroom, protection solaire, dressing, extérieur, lot agencement, photos classées par chantier pour les réalisations.
 - [ ] Logos partenaires (`src/assets/partenaires/<slug>.png`), noms complets de « S.B » et « Men 85 ».
 - [ ] URL du configurateur MéO + éventuel code revendeur.
-- [ ] Place ID Google Business (avis) ; URLs Facebook / Instagram exactes.
+- [x] Place ID Google Business (avis) : renseigné le 06/11/2026, clé `GOOGLE_PLACES_API_KEY` dans `.env` et sur Vercel.
+- [ ] URLs Facebook / Instagram exactes.
 - [ ] Horaires d'ouverture ; nom du chargé d'affaires agencement.
 - [ ] Raison sociale, SIREN/SIRET (mentions légales) ; nom de domaine définitif.
 - [ ] Clé Web3Forms (formulaire) — `.env` → `PUBLIC_WEB3FORMS_KEY`.

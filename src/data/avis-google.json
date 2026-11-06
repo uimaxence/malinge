@@ -1,7 +1,43 @@
 {
-  "fetchedAt": null,
-  "note": "Généré par scripts/fetch-avis-google.mjs — ne pas éditer à la main. TODO client : renseigner le Place ID Google dans src/config/business.ts puis lancer `npm run avis:fetch`.",
-  "rating": null,
-  "count": 0,
-  "reviews": []
+  "fetchedAt": "2026-11-06",
+  "note": "Généré par scripts/fetch-avis-google.mjs — ne pas éditer à la main.",
+  "rating": 5,
+  "count": 26,
+  "reviews": [
+    {
+      "auteur": "Tanguy Veron",
+      "note": 5,
+      "texte": "Très satisfait de cette entreprise, c’est la deuxième fois qu’ils interviennent à la maison pour de la pose de menuiseries. Toujours aussi satisfaits, réactivité, écoute, travail soigneux et consciencieux. Le chantier s’est déroulé sur plusieurs jours, et la maison était laissée très propre à la fin de chaque journée, une mention spéciale à Maxime et à son équipe pour la qualité de leur travail, ainsi qu’à la gamme de produits  Meo, qui est vraiment de qualité. Merci également à Dylan pour son intervention et son sauvetage avec la chèvre du voisin 😊\nJe recommande vivement cette entreprise !",
+      "dateRelative": "il y a 3 semaines",
+      "date": "2026-10-11"
+    },
+    {
+      "auteur": "francis courard",
+      "note": 5,
+      "texte": "Nous avons rénové notre longère en changeant 10 portes et fenêtres. Le travail de Maxime Veron et sont équipe a été à la hauteur, de bon conseils avant, un travail très consciencieux et de très bonnes finitions. Nous recommandons vivement cette entreprise!",
+      "dateRelative": "il y a un an",
+      "date": "2025-10-05"
+    },
+    {
+      "auteur": "Xavier Graton",
+      "note": 5,
+      "texte": "Nous avons construit une maison neuve en 2025. Pose des menuiseries MEO réalisées avec soins , Réglages et SAV parfait.\nEntreprise de bon conseil , à l'écoute et réactive . Nous conseillons cette entreprise.",
+      "dateRelative": "il y a 9 mois",
+      "date": "2026-01-27"
+    },
+    {
+      "auteur": "Amé Lolo",
+      "note": 5,
+      "texte": "Entreprise locale de pose de menuiserie  competente. Nous avons été bien suivis par Maxime Véron,  disponible et de bon conseil.  Le chantier a été fait dans les temps et rendu propre. Nous recommandons 👍",
+      "dateRelative": "il y a un an",
+      "date": "2025-10-29"
+    },
+    {
+      "auteur": "Mathieu ANGEBAULT",
+      "note": 5,
+      "texte": "Nous avons fait appel à cette société pour pose de garde corps et d'entrées d'air. Le travail a été de très bonne qualité accompagné d'une très grande réactivité. Nous conseillons sans hésiter.",
+      "dateRelative": "il y a 7 mois",
+      "date": "2026-03-27"
+    }
+  ]
 }

@@ -12,8 +12,8 @@
 // Limite connue de l'API : Google ne renvoie que les 5 avis « les plus
 // pertinents » par fiche. Les agrégats (note, nombre total) sont exacts.
 //
-// TODO client : renseigner le Place ID de la fiche Google Business
-// (voir src/config/business.ts → googleBusiness.placeId).
+// Le Place ID de la fiche est dans src/config/business.ts
+// (googleBusiness.placeId).
 
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";

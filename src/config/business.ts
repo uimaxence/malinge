@@ -65,13 +65,12 @@ export const business = {
 
 /**
  * Fiche Google Business Profile.
- * TODO client : renseigner le Place ID (Google Maps → partager la fiche →
- * l'identifiant apparaît dans l'URL, ou via https://developers.google.com/maps/documentation/places/web-service/place-id).
- * Sans Place ID, la section « Avis Google » affiche seulement le lien
- * « Laisser un avis » (pas de note ni de faux avis).
+ * Le Place ID (identifiant public de la fiche) sert à récupérer la note et
+ * les avis au build (scripts/fetch-avis-google.mjs) et au lien « Laisser un
+ * avis ». Sans Place ID, la section « Avis Google » n'affiche ni note ni avis.
  */
 export const googleBusiness = {
-  placeId: "",
+  placeId: "ChIJgyYfKCPEkA4RZ_SYH-rlAt8",
   mapsUrl: "https://www.google.com/maps/search/?api=1&query=Malinge+%26+Associ%C3%A9s+Le+Pin-en-Mauges",
   get writeReviewUrl(): string {
     return this.placeId
