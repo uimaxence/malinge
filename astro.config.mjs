@@ -8,8 +8,7 @@ export default defineConfig({
   // Forme canonique unique : trailing slash partout (canonical, sitemap et
   // liens internes alignés).
   trailingSlash: "always",
-  // Les pages /apercu/ (variantes de hero) restent hors sitemap et noindex.
-  integrations: [sitemap({ filter: (page) => !page.includes("/apercu/") })],
+  integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
   },
