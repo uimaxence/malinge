@@ -1,5 +1,5 @@
 ---
-// Variante de hero « vidéo au défilement » (aperçu : /apercu/hero-video/).
+// Hero de l'accueil : vidéo pilotée par le défilement.
 // Rien ne se lit tout seul : c'est le défilement dans la section (300 vh) qui
 // fait avancer l'image. On part de la façade et de ses fenêtres, on entre dans
 // la maison, on longe la cuisine et on arrive dans le salon devant la
@@ -23,7 +23,8 @@ import Icon from "../ui/Icon.astro";
 import { business, agence } from "../../config/business";
 
 // Nombre d'images de la séquence mobile (public/hero/mobile/000.webp …,
-// une image sur trois de la vidéo verticale, 540 px de large, 2,6 Mo en tout).
+// une image sur trois de la vidéo verticale, en définition native 716 × 1284,
+// WebP qualité 55, 3,2 Mo en tout).
 const NB_IMAGES_MOBILE = 79;
 
 // Légendes mises en avant selon l'avancement (0 → 1) dans la section :
@@ -130,6 +131,9 @@ const etapes = [
     const copy = section.querySelector<HTMLElement>("[data-hero-copy]");
     const indice = section.querySelector<HTMLElement>("[data-hero-indice]");
     const portrait = window.matchMedia("(orientation: portrait)").matches;
+    // `cible` suit le défilement ; `avancement` (ce qui est affiché) la rattrape
+    // en douceur, pour que les crans de molette ne donnent pas d'à-coups.
+    let cible = 0;
     let avancement = 0;
     let raf = 0;
 
@@ -139,6 +143,8 @@ const etapes = [
       video.preload = "auto";
       video.load();
       video.addEventListener("loadedmetadata", () => { duree = video.duration; planifier(); }, { once: true });
+      // Une seule recherche à la fois : la suivante part quand celle-ci aboutit.
+      video.addEventListener("seeked", () => { if (!raf) raf = requestAnimationFrame(rendre); });
       video.addEventListener("loadeddata", () => video.classList.add("is-pret"), { once: true });
     };
 
@@ -200,9 +206,11 @@ const etapes = [
     };
     const rendre = () => {
       raf = 0;
+      const ecart = cible - avancement;
+      avancement = Math.abs(ecart) < 0.0005 ? cible : avancement + ecart * 0.22;
       const p = avancement;
       if (portrait) dessiner();
-      else if (duree) video.currentTime = p * duree;
+      else if (duree && !video.seeking && Math.abs(video.currentTime - p * duree) > 0.02) video.currentTime = p * duree;
       for (const el of etapes) {
         el.classList.toggle("is-on", p >= Number(el.dataset.de) && p < Number(el.dataset.a) + (p === 1 ? 0.001 : 0));
       }
@@ -213,11 +221,14 @@ const etapes = [
         copy.style.transform = `translateY(${-24 * t}px)`;
       }
       if (indice) indice.style.opacity = p > 0.05 ? "0" : "1";
+      if (avancement !== cible) raf = requestAnimationFrame(rendre);
     };
     const planifier = () => {
-      avancement = mesurer();
+      cible = mesurer();
       if (!raf) raf = requestAnimationFrame(rendre);
     };
+    // Page rechargée en cours de défilement : on part de la bonne image.
+    avancement = cible = mesurer();
 
     if (portrait) brancherImages();
     else brancherVideo();

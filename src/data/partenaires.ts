@@ -22,13 +22,13 @@ export const partenaires: Partenaire[] = [
     url: "/menuisier-excellence-meo/",
     principal: true,
   },
-  { slug: "cedmat", nom: "Cedmat", role: "Fermetures et portes de garage" },
+  { slug: "cedmat", nom: "Cedmat", role: "Volets roulants et portes de garage", url: "https://cedmat.fr/" },
   { slug: "somfy", nom: "Somfy", role: "Motorisation et domotique", url: "https://www.somfy.fr/" },
   // TODO client : nom complet de « S.B ».
   { slug: "sb", nom: "S.B", role: "Fournisseur" },
   // TODO client : nom complet de « Men 85 » (Menuiseries 85 ?).
   { slug: "men85", nom: "Men 85", role: "Menuiseries" },
-  { slug: "batistyl", nom: "Batistyl", role: "Menuiseries PVC et aluminium" },
+  { slug: "batistyl", nom: "Batistyl", role: "Menuiseries PVC et aluminium", url: "https://www.batistyl-habitat.fr/" },
   { slug: "sybaie", nom: "SyBaie", role: "Menuiseries aluminium" },
   { slug: "jde", nom: "JDE", role: "Fournisseur" },
   { slug: "a-l-envers-du-decor", nom: "À l'envers du décor", role: "Agencement et décoration" },
